@@ -34,9 +34,9 @@ namespace zijian666.SuperConvert
             return assemblies.ToArray();
         }
 
-        static IConvertSettings _settings;
+        static ConvertSettings _settings;
 
-        public static IConvertSettings Settings => _settings;
+        public static ConvertSettings Settings => _settings;
 
         static Converts()
         {
@@ -70,8 +70,7 @@ namespace zijian666.SuperConvert
 
         public static T To<T>(this object value, IConvertSettings settings)
         {
-            _settings = settings.Combin(_settings);
-            using IConvertContext context = new ConvertContext(_settings);
+            using IConvertContext context = new ConvertContext(settings.Combin(_settings));
             var conv = _settings.GetConvertor<T>(context);
             var result = conv.Convert(context, value);
             return result.Value;

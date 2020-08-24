@@ -1,5 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using zijian666.SuperConvert.Convertor.Base;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
@@ -14,6 +20,18 @@ namespace zijian666.SuperConvert.Core
             _settings1 = settings1;
             _settings2 = settings2;
             Trace = _settings1?.Trace ?? _settings2?.Trace;
+            if (_settings1?.Translators.IsEmpty() ?? true)
+            {
+                Translators = _settings2?.Translators;
+            }
+            else if (_settings2?.Translators.IsEmpty() ?? true)
+            {
+                Translators = _settings1?.Translators;
+            }
+            else
+            {
+                Translators = _settings1.Translators.Union(_settings2.Translators);
+            }
         }
 
         public TraceListener Trace { get; set; }
@@ -32,5 +50,23 @@ namespace zijian666.SuperConvert.Core
             }
             return new AggregateConvertor<T>(conv1, conv2);
         }
+
+        public IEnumerable<ITranslator> Translators { get; }
+
+        public IStringSerializer StringSerializer => _settings1?.StringSerializer ?? _settings2?.StringSerializer;
+
+        public CultureInfo CultureInfo => _settings1?.CultureInfo ?? _settings2?.CultureInfo ?? CultureInfo.CurrentUICulture;
+
+        public NumberFormatInfo NumberFormatInfo
+            => _settings1?.NumberFormatInfo ?? _settings2?.NumberFormatInfo ?? NumberFormatInfo.CurrentInfo;
+
+        public Encoding Encoding
+            => _settings1?.Encoding ?? _settings2?.Encoding ?? Encoding.UTF8;
+
+        public Dictionary<Type, IFormatProvider> FormatProviders
+            => _settings1?.FormatProviders ?? _settings2?.FormatProviders;
+
+        public StringSeparator StringSeparator
+            => _settings1?.StringSeparator ?? _settings2?.StringSeparator;
     }
 }

@@ -4,71 +4,75 @@ using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
-using static System.Int32;
+using static System.UInt16;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    class Int32Convertor : BaseConvertor<int>, IFromConvertible<int>, IFrom<object, int>, IFrom<byte[], int>
+    /// <summary>
+    /// <seealso cref="ushort"/> 转换器
+    /// </summary>
+    public class UInt16Convertor : BaseConvertor<ushort>
+                                , IFromConvertible<ushort>
+                                , IFrom<object, ushort>
+                                , IFrom<byte[], ushort>
     {
-        public ConvertResult<int> From(IConvertContext context, bool input) => input ? 1 : 0;
-        public ConvertResult<int> From(IConvertContext context, char input) => input;
-        public ConvertResult<int> From(IConvertContext context, sbyte input) => input;
-        public ConvertResult<int> From(IConvertContext context, byte input) => input;
-        public ConvertResult<int> From(IConvertContext context, short input) => input;
-        public ConvertResult<int> From(IConvertContext context, ushort input) => input;
-        public ConvertResult<int> From(IConvertContext context, int input) => input;
-        public ConvertResult<int> From(IConvertContext context, uint input)
+        public ConvertResult<ushort> From(IConvertContext context, bool input) => input ? (ushort)1 : (ushort)0;
+        public ConvertResult<ushort> From(IConvertContext context, char input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, sbyte input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, byte input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, short input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, ushort input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, int input) => (ushort)input;
+        public ConvertResult<ushort> From(IConvertContext context, uint input)
         {
             if (input > MaxValue)
             {
                 return Exceptions.Overflow($"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return (int)input;
+            return (ushort)input;
         }
-
-        public ConvertResult<int> From(IConvertContext context, long input)
+        public ConvertResult<ushort> From(IConvertContext context, long input)
         {
             if ((input < MinValue) || (input > MaxValue))
             {
                 return Exceptions.Overflow(input < MinValue ? $"{input} < {MinValue}" : $"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return (int)input;
+            return (ushort)input;
         }
-
-        public ConvertResult<int> From(IConvertContext context, ulong input)
+        public ConvertResult<ushort> From(IConvertContext context, ulong input)
         {
-            if (input > MaxValue)
+            if (input > (int)MaxValue)
             {
                 return Exceptions.Overflow($"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return (int)input;
+            return (ushort)input;
         }
-        public ConvertResult<int> From(IConvertContext context, float input)
+        public ConvertResult<ushort> From(IConvertContext context, float input)
         {
             if ((input < MinValue) || (input > MaxValue))
             {
                 return Exceptions.Overflow(input < MinValue ? $"{input} < {MinValue}" : $"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return (int)input;
+            return (ushort)input;
         }
-        public ConvertResult<int> From(IConvertContext context, double input)
+        public ConvertResult<ushort> From(IConvertContext context, double input)
         {
             if ((input < MinValue) || (input > MaxValue))
             {
                 return Exceptions.Overflow(input < MinValue ? $"{input} < {MinValue}" : $"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return (int)input;
+            return (ushort)input;
         }
-        public ConvertResult<int> From(IConvertContext context, decimal input)
+        public ConvertResult<ushort> From(IConvertContext context, decimal input)
         {
             if ((input < MinValue) || (input > MaxValue))
             {
                 return Exceptions.Overflow(input < MinValue ? $"{input} < {MinValue}" : $"{input} > {MaxValue}", context.Settings.CultureInfo);
             }
-            return decimal.ToInt32(input);
+            return decimal.ToUInt16(input);
         }
-        public ConvertResult<int> From(IConvertContext context, DateTime input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
-        public ConvertResult<int> From(IConvertContext context, string input)
+        public ConvertResult<ushort> From(IConvertContext context, DateTime input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<ushort> From(IConvertContext context, string input)
         {
             var s = input?.Trim() ?? "";
             if (TryParse(s, NumberStyles.Any, context.Settings.NumberFormatInfo ?? NumberFormatInfo.CurrentInfo, out var result))
@@ -92,7 +96,7 @@ namespace zijian666.SuperConvert.Convertor
                         case 'B':
                             try
                             {
-                                return System.Convert.ToInt32(s.Substring(2), 2);
+                                return System.Convert.ToUInt16(s.Substring(2), 2);
                             }
                             catch (Exception e)
                             {
@@ -112,14 +116,14 @@ namespace zijian666.SuperConvert.Convertor
             }
             return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
         }
-        public ConvertResult<int> From(IConvertContext context, object input) => input?.GetHashCode() ?? default;
-        public ConvertResult<int> From(IConvertContext context, byte[] input)
+        public ConvertResult<ushort> From(IConvertContext context, object input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<ushort> From(IConvertContext context, byte[] input)
         {
-            if (input == null || input.Length > sizeof(int))
+            if (input == null || input.Length > sizeof(ushort))
             {
                 return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
             }
-            return BitConverter.ToInt32(input.Slice(sizeof(int)), 0);
+            return BitConverter.ToUInt16(input.Slice(sizeof(ushort)), 0);
         }
     }
 }

@@ -21,7 +21,5 @@ namespace zijian666.SuperConvert.Core
 
         public AggregateException ToException(string message) => new AggregateException(message, this);
 
-        public AggregateException ToException(object input, Type type)
-            => ToException(Exceptions.ConvertFail(input, type));
     }
 }

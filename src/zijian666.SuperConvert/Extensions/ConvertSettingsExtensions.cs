@@ -1,4 +1,5 @@
-﻿using zijian666.SuperConvert.Core;
+﻿using System;
+using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Extensions
@@ -20,6 +21,22 @@ namespace zijian666.SuperConvert.Extensions
                 return settings1;
             }
             return new CombinConvertSettings(settings1, settings2);
+        }
+
+        public static IFormatProvider GetFormatProvider(this IConvertSettings settings, Type type)
+        {
+            if (settings.FormatProviders != null && settings.FormatProviders.TryGetValue(type, out var formatProvider))
+            {
+                return formatProvider;
+            }
+            if (settings.FormatProviders?.Count == 1)
+            {
+                foreach (var item in settings.FormatProviders)
+                {
+                    return item.Value;
+                }
+            }
+            return null;
         }
     }
 }

@@ -10,6 +10,7 @@ namespace zijian666.SuperConvert.Core
     [DebuggerDisplay("{Success} : {Success ? (object)OutputValue : Exception.Message}")]
     public readonly struct ConvertResult<T> : IObjectReference
     {
+        public readonly static ConvertResult<T> NULL = new ConvertResult<T>(false, default, null);
         /// <summary>
         /// 转换成功
         /// </summary>

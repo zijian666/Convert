@@ -13,10 +13,11 @@ namespace zijian666.SuperConvert.Convertor.Base
     /// <remarks>
     /// 如果转换失败,会继续尝试下一个转换器,直到成功或全部失败
     /// </remarks>
-    internal sealed class AggregateConvertor<T> : IConvertor<T>
+    internal sealed class AggregateConvertor<T> : Convertor<T>, IConvertor<T>
     {
         public AggregateConvertor(IEnumerable<IConvertor<T>> convertors)
         {
+
             if (convertors == null)
             {
                 throw new ArgumentNullException(nameof(convertors));
@@ -30,18 +31,16 @@ namespace zijian666.SuperConvert.Convertor.Base
                 throw new ArgumentOutOfRangeException(nameof(convertors), "转换器必须大于1个");
             }
         }
+
         public AggregateConvertor(params IConvertor<T>[] convertors)
             : this((IEnumerable<IConvertor<T>>)convertors)
         {
 
         }
 
-
-        public uint Priority => 100;
-
         public IReadOnlyCollection<IConvertor<T>> Convertors { get; }
 
-        public ConvertResult<T> Convert(IConvertContext context, object input)
+        public override ConvertResult<T> Convert(IConvertContext context, object input)
         {
             ExceptionCollection exceptions = null;
             foreach (var convertor in Convertors)
@@ -53,7 +52,9 @@ namespace zijian666.SuperConvert.Convertor.Base
                 }
                 exceptions += result.Exception;
             }
-            return exceptions.ToException(input, typeof(T));
+
+            var message = Exceptions.ConvertFailMessage(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return exceptions.ToException(message);
         }
     }
 }

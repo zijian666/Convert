@@ -25,12 +25,12 @@ namespace zijian666.SuperConvert.Core
                 .OrderBy(x => x)
                 .Select(x => new TraceConvertor<T>(x.Convertor));
 
-            if (convs.Count() == 1)
+            return (convs.Count()) switch
             {
-                return convs.FirstOrDefault();
-            }
-
-            return new TraceConvertor<T>(new AggregateConvertor<T>(convs));
+                0 => new TraceConvertor<T>(new NotFoundConvertor<T>()),
+                1 => convs.FirstOrDefault(),
+                _ => new TraceConvertor<T>(new AggregateConvertor<T>(convs)),
+            };
         }
     }
 }
