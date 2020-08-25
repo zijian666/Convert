@@ -9,7 +9,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
 {
-    struct KeyValueEnumerator<TKey, TValue>
+    public struct KeyValueEnumerator<TKey, TValue>
     {
 
         private static readonly Func<NameObjectCollectionBase, int, string> BaseGetKey =
@@ -58,7 +58,7 @@ namespace zijian666.SuperConvert.Core
             Single,
         }
 
-        class DataRecord : IDataRecord
+        readonly struct DataRecord : IDataRecord
         {
             private readonly IDataRecord _record;
 
@@ -312,7 +312,7 @@ namespace zijian666.SuperConvert.Core
             InputType.NameObjectCollection => BaseGet(_nameObjectCollection, _index),
             InputType.Dictionary => _dictionary[_keyEnumerator.Current],
             InputType.DictionaryT => _dictionaryT[_keyEnumeratorT.Current],
-            InputType.Object => _properties[_index].Get(_object),
+            InputType.Object => _properties[_index].GetValue(_object),
             InputType.Single => _single,
             _ => throw new NotImplementedException(),
         };

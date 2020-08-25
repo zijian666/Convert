@@ -12,32 +12,56 @@ namespace zijian666.SuperConvert.Factory
     {
         public IEnumerable<MatchedConvertor<T>> Create<T>()
         {
-            var convertor = Build<T>();
-            if (convertor != null)
+            if (typeof(T).IsArray)
             {
-                yield return new MatchedConvertor<T>(convertor, 1, MacthedLevel.Full);
+                var convertor = ByArray<T>();
+                yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Full);
+                yield break;
+            }
+            var genericArgs = typeof(T).GetGenericArguments(typeof(IList<>));
+            if (genericArgs != null)
+            {
+                var convertor = ByList<T>(genericArgs[0]);
+                if (typeof(List<>).MakeGenericType(genericArgs[0]) == typeof(T))
+                {
+                    yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Full);
+                }
+                else
+                {
+                    yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Subclass);
+                }
+                yield break;
+            }
+
+            if (typeof(T) == typeof(ArrayList))
+            {
+                var convertor = (IConvertor<T>)Activator.CreateInstance(typeof(ArrayListConvertor<>).MakeGenericType(typeof(T)));
+                yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Full);
+                yield break;
+            }
+
+            if (typeof(T) == typeof(IList))
+            {
+                var convertor = (IConvertor<T>)Activator.CreateInstance(typeof(ArrayListConvertor<>).MakeGenericType(typeof(T)));
+                yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Subclass);
+                yield break;
             }
         }
 
-        private IConvertor<T> Build<T>()
+        private IConvertor<T> ByArray<T>()
         {
-            if (typeof(T).IsArray)
-            {
-                return (IConvertor<T>)Activator.CreateInstance(typeof(ArrayConvertor<>).MakeGenericType(typeof(T).GetElementType()));
-            }
-            var genericArgs = typeof(T).GetGenericArguments(typeof(IList<>));
+            return (IConvertor<T>)Activator.CreateInstance(
+                typeof(ArrayConvertor<>).MakeGenericType(typeof(T).GetElementType()));
+        }
 
-            if (genericArgs != null)
-            {
-                return (IConvertor<T>)Activator.CreateInstance(typeof(ListConvertor<,>).MakeGenericType(typeof(T), genericArgs[0]));
-            }
+        private IConvertor<T> ByList<T>(Type type)
+        {
+            return (IConvertor<T>)Activator.CreateInstance(typeof(ListConvertor<,>).MakeGenericType(typeof(T), type));
+        }
 
-            // 如果无法得道泛型参数, 判断output是否与 List<object> 兼容, 如果是返回 List<object> 的转换器
-            if (typeof(T) == typeof(ArrayList) || typeof(T) == typeof(IList))
-            {
-                return (IConvertor<T>)Activator.CreateInstance(typeof(ArrayListConvertor<>).MakeGenericType(typeof(T)));
-            }
-            return null;
+        private IConvertor<T> ByList<T>()
+        {
+            return (IConvertor<T>)Activator.CreateInstance(typeof(ArrayListConvertor<>).MakeGenericType(typeof(T)));
         }
     }
 }

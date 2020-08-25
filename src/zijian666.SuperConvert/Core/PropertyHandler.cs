@@ -17,8 +17,8 @@ namespace zijian666.SuperConvert.Core
             Property = property;
             PropertyType = property.PropertyType;
             Name = property.Name;
-            Get = property.GetValue;
-            Set = property.SetValue;
+            GetValue = property.GetValue;
+            SetValue = property.SetValue;
         }
 
         /// <summary>
@@ -35,11 +35,11 @@ namespace zijian666.SuperConvert.Core
         /// <summary>
         /// 属性的Get方法委托
         /// </summary>
-        public Func<object, object> Get { get; }
+        public Func<object, object> GetValue { get; }
         /// <summary>
         /// 属性的Set方法委托
         /// </summary>
-        public Action<object, object> Set { get; }
+        public Action<object, object> SetValue { get; }
         /// <summary>
         /// 属性
         /// </summary>
@@ -48,6 +48,5 @@ namespace zijian666.SuperConvert.Core
         /// 属性名称
         /// </summary>
         public string Name { get; }
-
     }
 }

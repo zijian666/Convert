@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace zijian666.SuperConvert.Core
@@ -18,20 +19,20 @@ namespace zijian666.SuperConvert.Core
         /// <summary>
         /// 类型缓存
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, PropertyHandler[]> _typeCache =
-            new ConcurrentDictionary<Type, PropertyHandler[]>();
+        private static readonly ConcurrentDictionary<Type, Dictionary<string, PropertyHandler>> _typeCache =
+            new ConcurrentDictionary<Type, Dictionary<string, PropertyHandler>>();
 
         /// <summary>
         /// 表示一个空属性集合
         /// </summary>
-        private static readonly PropertyHandler[] _empty = new PropertyHandler[0];
+        private static readonly Dictionary<string, PropertyHandler> _empty = new Dictionary<string, PropertyHandler>();
 
         /// <summary>
         /// 根据类型获取操作属性的对象集合
         /// </summary>
         /// <param name="type"> 需要获取属性的类型 </param>
         /// <returns> </returns>
-        public static PropertyHandler[] GetByType(Type type) =>
+        public static Dictionary<string, PropertyHandler> GetByType(Type type) =>
             type == null ? null : _typeCache.GetOrAdd(type, Create);
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace zijian666.SuperConvert.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static PropertyHandler[] Create(Type type)
+        private static Dictionary<string, PropertyHandler> Create(Type type)
         {
             var ps = type.GetProperties();
             var length = ps.Length;
@@ -48,10 +49,11 @@ namespace zijian666.SuperConvert.Core
                 _typeCache.TryAdd(type, _empty);
                 return _empty;
             }
-            var result = new PropertyHandler[length];
+            var result = new Dictionary<string, PropertyHandler>(StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < length; i++)
             {
-                result[i] = GetPropertyHandler(ps[i]);
+                var handler = GetPropertyHandler(ps[i]);
+                result.Add(handler.Name, handler);
             }
             return result;
         }

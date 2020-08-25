@@ -13,6 +13,20 @@ namespace zijian666.SuperConvert.Extensions
             return convertor.Convert(context, value);
         }
 
+        public static ConvertResult<object> Convert(this IConvertContext context, Type type, object value)
+        {
+            var convertor = ProxyConvertor<object>(context, type);
+            return convertor.Convert(context, value);
+        }
+
+        private static IConvertor<T> ProxyConvertor<T>(IConvertContext context, Type type)
+        {
+            var getConvertor = typeof(IConvertSettings).GetMethod("GetConvertor").MakeGenericMethod(type);
+            var convertor = getConvertor.Invoke(context.Settings, new[] { context });
+            var proxyConvertor = typeof(ProxyConvertor<,>).MakeGenericType(type, typeof(T));
+            return (IConvertor<T>)Activator.CreateInstance(proxyConvertor, convertor);
+        }
+
         public static IConvertor<T> GetConvertor<T>(this IConvertContext context)
             => context?.Settings.GetConvertor<T>(context);
 

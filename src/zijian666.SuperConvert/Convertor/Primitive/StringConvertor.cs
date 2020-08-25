@@ -68,7 +68,7 @@ namespace zijian666.SuperConvert.Convertor
         public ConvertResult<string> From(IConvertContext context, StringBuilder input) => input?.ToString();
         public ConvertResult<string> From(IConvertContext context, IEnumerator input)
         {
-            if (input?.MoveNext() ?? false)
+            if (input == null || !input.MoveNext())
             {
                 return default;
             }
@@ -79,16 +79,17 @@ namespace zijian666.SuperConvert.Convertor
             }
 
             var sb = new StringBuilder(s.Value);
-            do
+            while (input.MoveNext())
             {
-                sb.Append(context.Settings.StringSeparator?.First ?? ",");
                 s = context.Convert<string>(input.Current);
                 if (!s.Success)
                 {
                     return s;
                 }
-            } while (input.MoveNext());
+                sb.Append(context.Settings.StringSeparator?.First ?? ",");
+                sb.Append(s.Value);
 
+            }
             return sb.ToString();
         }
 
