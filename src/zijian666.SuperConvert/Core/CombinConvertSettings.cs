@@ -68,5 +68,8 @@ namespace zijian666.SuperConvert.Core
 
         public StringSeparator StringSeparator
             => _settings1?.StringSeparator ?? _settings2?.StringSeparator;
+
+        public StringSplitOptions StringSplitOptions
+            => _settings1?.StringSplitOptions ?? _settings2?.StringSplitOptions ?? StringSplitOptions.RemoveEmptyEntries;
     }
 }

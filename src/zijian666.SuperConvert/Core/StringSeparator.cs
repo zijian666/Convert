@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace zijian666.SuperConvert.Core
 {
@@ -30,5 +31,8 @@ namespace zijian666.SuperConvert.Core
         }
 
         public string First => _separators.Count == 0 ? "," : ((string)_separators[0] ?? ",");
+
+        public static implicit operator string[](StringSeparator separator)
+            => separator == null ? Array.Empty<string>() : (string[])separator._separators.ToArray(typeof(string));
     }
 }

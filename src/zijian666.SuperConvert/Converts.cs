@@ -71,8 +71,7 @@ namespace zijian666.SuperConvert
         public static T To<T>(this object value, IConvertSettings settings)
         {
             using IConvertContext context = new ConvertContext(settings.Combin(_settings));
-            var conv = _settings.GetConvertor<T>(context);
-            var result = conv.Convert(context, value);
+            var result = context.Convert<T>(value);
             return result.Value;
         }
 

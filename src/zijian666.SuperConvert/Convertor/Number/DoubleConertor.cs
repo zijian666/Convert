@@ -27,7 +27,7 @@ namespace zijian666.SuperConvert.Convertor
         public ConvertResult<double> From(IConvertContext context, double input) => input;
         public ConvertResult<double> From(IConvertContext context, decimal input) => decimal.ToDouble(input);
         public ConvertResult<double> From(IConvertContext context, DateTime input)
-            => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            => context.ConvertFail(this, input);
         public ConvertResult<double> From(IConvertContext context, string input)
         {
             var s = input?.Trim() ?? "";
@@ -70,13 +70,13 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
         public ConvertResult<double> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(double))
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return BitConverter.ToDouble(input.Slice(sizeof(double)), 0);
         }

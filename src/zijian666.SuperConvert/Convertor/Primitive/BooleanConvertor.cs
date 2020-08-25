@@ -1,6 +1,7 @@
 ﻿using System;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
@@ -74,11 +75,11 @@ namespace zijian666.SuperConvert.Convertor
                 default:
                     break;
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
         public ConvertResult<bool> From(IConvertContext context, object input)
-            => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            => context.ConvertFail(this, input);
         public ConvertResult<bool> From(IConvertContext context, DateTime input)
-            => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            => context.ConvertFail(this, input);
     }
 }

@@ -71,7 +71,7 @@ namespace zijian666.SuperConvert.Convertor
             }
             return decimal.ToUInt32(input);
         }
-        public ConvertResult<uint> From(IConvertContext context, DateTime input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<uint> From(IConvertContext context, DateTime input) => context.ConvertFail(this, input);
         public ConvertResult<uint> From(IConvertContext context, string input)
         {
             var s = input?.Trim() ?? "";
@@ -114,14 +114,14 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
-        public ConvertResult<uint> From(IConvertContext context, object input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<uint> From(IConvertContext context, object input) => context.ConvertFail(this, input);
         public ConvertResult<uint> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(uint))
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return BitConverter.ToUInt32(input.Slice(sizeof(uint)), 0);
         }

@@ -41,5 +41,7 @@ namespace zijian666.SuperConvert.Core
         public Dictionary<Type, IFormatProvider> FormatProviders { get; }
 
         public StringSeparator StringSeparator { get; set; } = ",";
+
+        public StringSplitOptions StringSplitOptions { get; set; } = StringSplitOptions.RemoveEmptyEntries;
     }
 }

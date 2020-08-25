@@ -27,7 +27,7 @@ namespace zijian666.SuperConvert.Convertor
         public ConvertResult<decimal> From(IConvertContext context, double input) => (decimal)input;
         public ConvertResult<decimal> From(IConvertContext context, decimal input) => input;
         public ConvertResult<decimal> From(IConvertContext context, DateTime input)
-            => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            => context.ConvertFail(this, input);
 
         public ConvertResult<decimal> From(IConvertContext context, string input)
         {
@@ -71,14 +71,14 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
 
         public ConvertResult<decimal> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(decimal))
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             var bytes = input.Slice(sizeof(decimal));
             var arr2 = new int[4];

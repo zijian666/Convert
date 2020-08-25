@@ -2,6 +2,7 @@
 using System.Globalization;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 using static System.Byte;
 
@@ -97,7 +98,7 @@ namespace zijian666.SuperConvert.Convertor
         }
         public ConvertResult<byte> From(IConvertContext context, DateTime input)
         {
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
         public ConvertResult<byte> From(IConvertContext context, string input)
         {
@@ -141,7 +142,7 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
     }
 }

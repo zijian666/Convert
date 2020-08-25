@@ -17,11 +17,9 @@ namespace zijian666.SuperConvert.Core
             }
             if (text == null)
             {
-                return string.Format(rs.CANT_CONVERT, "", origin.GetType().GetFriendlyName(), typeName);
+                return string.Format(rs.CANT_CONVERT, "", typeof(T).GetFriendlyName(), typeName);
             }
-            return string.Format(rs.CANT_CONVERT, text, origin.GetType().GetFriendlyName(), typeName);
-
-
+            return string.Format(rs.CANT_CONVERT, text, typeof(T).GetFriendlyName(), typeName);
         }
 
         public static Exception NotFountConvertor(CultureInfo cultureInfo)
@@ -30,10 +28,10 @@ namespace zijian666.SuperConvert.Core
             return new EntryPointNotFoundException(rs.NOT_FOUND_CONVERTOR);
         }
 
-        public static Exception ConvertFail<T>(T origin, string typeName, CultureInfo cultureInfo)
+        public static Exception ConvertFail<T>(T origin, string typeName, CultureInfo cultureInfo, Exception e = null)
         {
             var message = ConvertFailMessage(origin, typeName, cultureInfo);
-            return new InvalidCastException(message);
+            return new InvalidCastException(message, e);
         }
         public static Exception Overflow(string message, CultureInfo cultureInfo)
         {

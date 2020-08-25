@@ -18,7 +18,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -27,7 +27,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -35,7 +35,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -43,7 +43,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -51,7 +51,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -59,7 +59,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -67,7 +67,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -75,7 +75,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -83,7 +83,7 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
@@ -91,12 +91,12 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input < MinValue || input > MaxValue)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return (char)input;
         }
         public ConvertResult<char> From(IConvertContext context, DateTime input)
-            => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            => context.ConvertFail(this, input);
 
         public ConvertResult<char> From(IConvertContext context, string input)
         {
@@ -104,14 +104,14 @@ namespace zijian666.SuperConvert.Convertor
             {
                 return input[0];
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
 
         public ConvertResult<char> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(char))
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return BitConverter.ToChar(input.Slice(sizeof(char)), 0);
         }

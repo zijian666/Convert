@@ -42,7 +42,7 @@ namespace zijian666.SuperConvert.Convertor
                     break;
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
 
         public ConvertResult<TimeSpan> From(IConvertContext context, IConvertible input)
@@ -52,7 +52,7 @@ namespace zijian666.SuperConvert.Convertor
                 var time = input.ToDateTime(context.Settings.GetFormatProvider(typeof(DateTime)));
                 return new TimeSpan(time.Hour, time.Minute, time.Second, time.Millisecond);
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
     }
 }

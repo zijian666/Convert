@@ -1,8 +1,8 @@
-﻿using zijian666.SuperConvert.Extensions;
+﻿using System;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
-using System;
 
 namespace zijian666.SuperConvert.Convertor
 {
@@ -15,13 +15,13 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input.Length == 0)
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             if (Guid.TryParse(input, out var result))
             {
                 return result;
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
 
         public ConvertResult<Guid> From(IConvertContext context, decimal input)
@@ -38,7 +38,7 @@ namespace zijian666.SuperConvert.Convertor
             {
                 return new Guid(input);
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
     }
 }

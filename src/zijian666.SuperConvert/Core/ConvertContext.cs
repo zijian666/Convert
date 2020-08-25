@@ -1,8 +1,9 @@
-﻿using zijian666.SuperConvert.Interface;
+﻿using System.Collections.Generic;
+using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
 {
-    public class ConvertContext : IConvertContext
+    public class ConvertContext : Dictionary<string, object>, IConvertContext
     {
 
         public ConvertContext(IConvertSettings settings) => Settings = settings;
@@ -17,7 +18,7 @@ namespace zijian666.SuperConvert.Core
             {
                 if (disposing)
                 {
-                    // TODO: 释放托管状态(托管对象)
+                    this.Clear();
                 }
 
                 // TODO: 释放未托管的资源(未托管的对象)并替代终结器

@@ -7,5 +7,7 @@ namespace zijian666.SuperConvert.Interface
 
         IConvertSettings Settings { get; }
 
+        object this[string key] { get; set; }
+
     }
 }

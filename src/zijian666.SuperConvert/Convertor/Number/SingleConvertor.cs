@@ -65,7 +65,7 @@ namespace zijian666.SuperConvert.Convertor
             return (float)input;
         }
         public ConvertResult<float> From(IConvertContext context, decimal input) => decimal.ToSingle(input);
-        public ConvertResult<float> From(IConvertContext context, DateTime input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<float> From(IConvertContext context, DateTime input) => context.ConvertFail(this, input);
         public ConvertResult<float> From(IConvertContext context, string input)
         {
             var s = input?.Trim() ?? "";
@@ -108,16 +108,16 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
 
-        public ConvertResult<float> From(IConvertContext context, object input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<float> From(IConvertContext context, object input) => context.ConvertFail(this, input);
 
         public ConvertResult<float> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(float))
             {
-                return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+                return context.ConvertFail(this, input);
             }
             return BitConverter.ToSingle(input.Slice(sizeof(float)), 0);
         }

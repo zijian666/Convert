@@ -2,6 +2,7 @@
 using System.Globalization;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 using static System.SByte;
 
@@ -69,7 +70,7 @@ namespace zijian666.SuperConvert.Convertor
             }
             return decimal.ToSByte(input);
         }
-        public ConvertResult<sbyte> From(IConvertContext context, DateTime input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<sbyte> From(IConvertContext context, DateTime input) => context.ConvertFail(this, input);
 
         public ConvertResult<sbyte> From(IConvertContext context, string input)
         {
@@ -113,8 +114,8 @@ namespace zijian666.SuperConvert.Convertor
                     }
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
-        public ConvertResult<sbyte> From(IConvertContext context, object input) => Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+        public ConvertResult<sbyte> From(IConvertContext context, object input) => context.ConvertFail(this, input);
     }
 }

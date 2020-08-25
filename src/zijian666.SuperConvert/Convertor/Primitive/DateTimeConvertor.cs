@@ -51,7 +51,7 @@ namespace zijian666.SuperConvert.Convertor
                     break;
                 }
             }
-            return Exceptions.ConvertFail(input, TypeFriendlyName, context.Settings.CultureInfo);
+            return context.ConvertFail(this, input);
         }
     }
 }
