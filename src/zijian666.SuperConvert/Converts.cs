@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Factory;
@@ -64,18 +66,33 @@ namespace zijian666.SuperConvert
                 }
             }
             var builder = new ConvertorBuilder(factories.ToArray());
-            _settings = new ConvertSettings(builder);
-            _settings.Trace = new TextWriterTraceListener(Console.Out);
+            _settings = new ConvertSettings(builder)
+            {
+                Trace = new TextWriterTraceListener(Console.Out),
+                StringSeparator = ",",
+                Encoding = Encoding.UTF8,
+                CultureInfo = CultureInfo.CurrentUICulture,
+                NumberFormatInfo = NumberFormatInfo.CurrentInfo,
+                StringSplitOptions = StringSplitOptions.RemoveEmptyEntries,
+            };
         }
 
-        public static T To<T>(this object value, IConvertSettings settings)
+
+        public static ConvertResult<T> Convert<T>(this object value, IConvertSettings settings = null)
         {
             using IConvertContext context = new ConvertContext(settings.Combin(_settings));
-            var result = context.Convert<T>(value);
-            return result.Value;
+            return context.Convert<T>(value);
         }
 
-        public static T To<T>(this object value) => To<T>(value, null);
+        public static ConvertResult<object> Convert(this object value, Type type, IConvertSettings settings = null)
+        {
+            using IConvertContext context = new ConvertContext(settings.Combin(_settings));
+            return context.Convert(type, value);
+        }
+
+        public static T To<T>(this object value, T defaultValue) => Convert<T>(value, null).GetValueOrDefalut(defaultValue);
+
+        public static T To<T>(this object value) => Convert<T>(value, null).Value;
 
     }
 

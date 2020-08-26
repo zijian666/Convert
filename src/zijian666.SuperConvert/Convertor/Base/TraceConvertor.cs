@@ -44,6 +44,8 @@ namespace zijian666.SuperConvert.Convertor.Base
             {
                 trace?.WriteLine("返回:" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
             }
+
+            trace?.WriteLine("");
             return result;
         }
 
@@ -76,6 +78,8 @@ namespace zijian666.SuperConvert.Convertor.Base
             public StringSeparator StringSeparator => Converts.Settings.StringSeparator;
 
             public System.StringSplitOptions StringSplitOptions => Converts.Settings.StringSplitOptions;
+
+            public Dictionary<System.Type, string> FormatStrings => Converts.Settings.FormatStrings;
         }
     }
 }

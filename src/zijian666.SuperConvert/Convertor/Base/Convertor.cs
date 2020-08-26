@@ -28,7 +28,7 @@ namespace zijian666.SuperConvert.Convertor.Base
         /// </summary>
         public virtual string TypeFriendlyName { get; }
 
-        public uint Priority { get; } = 100;
+        public virtual uint Priority { get; } = 1;
 
         public abstract ConvertResult<T> Convert(IConvertContext context, object input);
     }

@@ -29,7 +29,6 @@ namespace zijian666.SuperConvert.Factory
 
             if (typeof(T) == typeof(IDictionary))
             {
-
                 var convertor = ByHashtable<T>();
                 yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Subclass);
                 yield break;

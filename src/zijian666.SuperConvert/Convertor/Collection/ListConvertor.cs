@@ -41,6 +41,13 @@ namespace zijian666.SuperConvert.Convertor
 
             if (enumerator.IsEmpty)
             {
+                var result = context.Convert<TValue>(input);
+                if (result.Success)
+                {
+                    var list1 = (TList)Activator.CreateInstance(typeof(TList).IsInterface ? typeof(List<TValue>) : typeof(TList));
+                    list1.Add(result.Value);
+                    return list1;
+                }
                 return context.ConvertFail(this, input);
             }
 

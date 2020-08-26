@@ -71,5 +71,8 @@ namespace zijian666.SuperConvert.Core
 
         public StringSplitOptions StringSplitOptions
             => _settings1?.StringSplitOptions ?? _settings2?.StringSplitOptions ?? StringSplitOptions.RemoveEmptyEntries;
+
+        public Dictionary<Type, string> FormatStrings
+            => _settings1?.FormatStrings ?? _settings2?.FormatStrings;
     }
 }

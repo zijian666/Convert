@@ -53,10 +53,5 @@
         /// 集合键转换失败：{0}，KEY={1}
         /// </summary>
         public virtual string COLLECTION_KEY_FAIL { get; set; } = "集合{0}键{1}转换失败";
-
-        /// <summary>
-        /// 未找到适合的转换器
-        /// </summary>
-        public virtual string NOT_FOUND_CONVERTOR { get; set; } = "未找到适合的转换器";
     }
 }

@@ -25,6 +25,8 @@ namespace zijian666.SuperConvert.Interface
 
         Dictionary<Type, IFormatProvider> FormatProviders { get; }
 
+        Dictionary<Type, string> FormatStrings { get; }
+
         StringSeparator StringSeparator { get; }
 
         StringSplitOptions StringSplitOptions { get; }

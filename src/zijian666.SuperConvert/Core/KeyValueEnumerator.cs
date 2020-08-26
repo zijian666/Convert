@@ -26,6 +26,7 @@ namespace zijian666.SuperConvert.Core
         private readonly IEnumerator _enumerator;
         private readonly IEnumerator<TValue> _enumeratorT;
         private readonly NameObjectCollectionBase _nameObjectCollection;
+        private readonly NameValueCollection _nameValueCollection;
         private readonly PropertyHandler[] _properties;
         private readonly object _object;
 
@@ -54,6 +55,7 @@ namespace zijian666.SuperConvert.Core
             DictionaryT,
             EnumeratorT,
             NameObjectCollection,
+            NameValueCollection,
             Object,
             Single,
         }
@@ -113,6 +115,7 @@ namespace zijian666.SuperConvert.Core
             _dictionaryT = null;
             _enumeratorT = null;
             _nameObjectCollection = null;
+            _nameValueCollection = null;
             _properties = null;
             _keyEnumerator = null;
             _keyEnumeratorT = null;
@@ -123,6 +126,11 @@ namespace zijian666.SuperConvert.Core
 
             switch (input)
             {
+                case NameValueCollection nameValueCollection:
+                    _nameValueCollection = nameValueCollection;
+                    _type = InputType.NameValueCollection;
+                    HasStringKey = true;
+                    break;
                 case NameObjectCollectionBase nameObjectCollection:
                     _nameObjectCollection = nameObjectCollection;
                     _type = InputType.NameObjectCollection;
@@ -155,11 +163,13 @@ namespace zijian666.SuperConvert.Core
                     break;
                 case IDictionary<TKey, TValue> dict:
                     _dictionaryT = dict;
+                    _keyEnumeratorT = dict.Keys.GetEnumerator();
                     _type = InputType.DictionaryT;
                     HasStringKey = true;
                     break;
                 case IDictionary dict:
                     _dictionary = dict;
+                    _keyEnumerator = dict.Keys.GetEnumerator();
                     _type = InputType.Dictionary;
                     HasStringKey = true;
                     break;
@@ -196,48 +206,29 @@ namespace zijian666.SuperConvert.Core
 
         public bool MoveNext()
         {
-            //var result = _type switch
-            //{
-            //    InputType.DataReader => _reader.Read(),
-            //    InputType.DataRecord => _index + 1 < _reader.FieldCount,
-            //    InputType.DataRow => _index + 1 < _table.Columns.Count,
-            //    InputType.DataSet => _index + 1 < _dataSet.Tables.Count,
-            //    InputType.DataTable => _index + 1 < _table.Rows.Count,
-            //    InputType.Dictionary => _index + 1 < _dictionary.Count,
-            //    InputType.Enumerator => _enumerator.MoveNext(),
-            //    InputType.DictionaryT => _index + 1 < _dictionaryT.Count,
-            //    InputType.EnumeratorT => _enumeratorT.MoveNext(),
-            //    InputType.NameObjectCollection => _index + 1 < _nameObjectCollection.Count,
-            //    InputType.Object => _index + 1 < _properties.Length,
-            //    _ => false,
-            //};
-            var result = TypeSwitchMoveNext();
+            var result = _type switch
+            {
+                InputType.DataReader => _reader.Read(),
+                InputType.DataRecord => _index + 1 < _reader.FieldCount,
+                InputType.DataRow => _index + 1 < _table.Columns.Count,
+                InputType.DataSet => _index + 1 < _dataSet.Tables.Count,
+                InputType.DataTable => _index + 1 < _table.Rows.Count,
+                InputType.Dictionary => _keyEnumerator.MoveNext(),
+                InputType.Enumerator => _enumerator.MoveNext(),
+                InputType.DictionaryT => _keyEnumerator.MoveNext(),
+                InputType.EnumeratorT => _enumeratorT.MoveNext(),
+                InputType.NameValueCollection => _index + 1 < _nameValueCollection.Count,
+                InputType.NameObjectCollection => _index + 1 < _nameObjectCollection.Count,
+                InputType.Object => _index + 1 < _properties.Length,
+                InputType.Single => _index == -1,
+                _ => false,
+            };
 
             if (result)
             {
                 _index++;
             }
             return result;
-        }
-
-        private bool TypeSwitchMoveNext()
-        {
-            switch (_type)
-            {
-                case InputType.DataReader: return _reader.Read();
-                case InputType.DataRecord: return _index + 1 < _reader.FieldCount;
-                case InputType.DataRow: return _index + 1 < _table.Columns.Count;
-                case InputType.DataSet: return _index + 1 < _dataSet.Tables.Count;
-                case InputType.DataTable: return _index + 1 < _table.Rows.Count;
-                case InputType.Dictionary: return _index + 1 < _dictionary.Count;
-                case InputType.Enumerator: return _enumerator.MoveNext();
-                case InputType.DictionaryT: return _index + 1 < _dictionaryT.Count;
-                case InputType.EnumeratorT: return _enumeratorT.MoveNext();
-                case InputType.NameObjectCollection: return _index + 1 < _nameObjectCollection.Count;
-                case InputType.Object: return _index + 1 < _properties.Length;
-                case InputType.Single: return _index == -1;
-                default: return false;
-            }
         }
 
         public ConvertResult<TKey> GetKey()
@@ -293,6 +284,7 @@ namespace zijian666.SuperConvert.Core
             InputType.DataTable => _index,
             InputType.DataReader => _index,
             InputType.NameObjectCollection => BaseGetKey(_nameObjectCollection, _index),
+            InputType.NameValueCollection => _nameValueCollection.Keys[_index],
             InputType.Dictionary => _keyEnumerator.Current,
             InputType.DictionaryT => _keyEnumeratorT.Current,
             InputType.Object => _properties[_index].Name,
@@ -310,6 +302,7 @@ namespace zijian666.SuperConvert.Core
             InputType.DataTable => _table.Rows[_index],
             InputType.DataReader => _record,
             InputType.NameObjectCollection => BaseGet(_nameObjectCollection, _index),
+            InputType.NameValueCollection => _nameValueCollection[_index],
             InputType.Dictionary => _dictionary[_keyEnumerator.Current],
             InputType.DictionaryT => _dictionaryT[_keyEnumeratorT.Current],
             InputType.Object => _properties[_index].GetValue(_object),

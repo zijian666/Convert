@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Interface;
@@ -33,6 +32,11 @@ namespace zijian666.SuperConvert.Convertor
                 return Ok(default);
             }
             var enumerator = new KeyValueEnumerator<object, object>(context, input);
+
+            if (enumerator.IsEmpty)
+            {
+                return (T)(object)new ArrayList { input };
+            }
 
             var list = new ArrayList();
             while (enumerator.MoveNext())

@@ -12,23 +12,63 @@ namespace zijian666.SuperConvert.Core
     {
         private readonly ConvertorBuilder _builder;
         private readonly ConcurrentDictionary<Type, object> _convertors;
+        private Dictionary<Type, string> _formatStrings;
+        private Dictionary<Type, IFormatProvider> _formatProviders;
+        private List<ITranslator> _translators;
 
         public ConvertSettings(ConvertorBuilder builder)
         {
-            _builder = builder ?? throw new ArgumentNullException(nameof(builder));
-            _convertors = new ConcurrentDictionary<Type, object>();
-            Translators = new List<ITranslator>();
-            FormatProviders = new Dictionary<Type, IFormatProvider>();
+            _builder = builder;
+            _convertors = _builder == null ? null : new ConcurrentDictionary<Type, object>();
+        }
+
+        public ConvertSettings()
+        : this(null)
+        {
+
         }
 
         public TraceListener Trace { get; set; }
 
         public IConvertor<T> GetConvertor<T>(IConvertContext context)
-            => (IConvertor<T>)_convertors.GetOrAdd(typeof(T), x => _builder.Build<T>());
+            => (IConvertor<T>)_convertors?.GetOrAdd(typeof(T), x => _builder.Build<T>());
 
-        public List<ITranslator> Translators { get; }
+        public List<ITranslator> Translators
+        {
+            get
+            {
+                if (_translators == null)
+                {
+                    _translators = new List<ITranslator>();
+                }
+                return _translators;
+            }
+        }
 
-        IEnumerable<ITranslator> IConvertSettings.Translators => Translators;
+        public Dictionary<Type, IFormatProvider> FormatProviders
+        {
+            get
+            {
+                if (_formatProviders == null)
+                {
+                    _formatProviders = new Dictionary<Type, IFormatProvider>();
+                }
+
+                return _formatProviders;
+            }
+        }
+
+        public Dictionary<Type, string> FormatStrings
+        {
+            get
+            {
+                if (_formatStrings == null)
+                {
+                    _formatStrings = new Dictionary<Type, string>();
+                }
+                return _formatStrings;
+            }
+        }
 
         public IStringSerializer StringSerializer { get; set; }
 
@@ -36,12 +76,15 @@ namespace zijian666.SuperConvert.Core
 
         public NumberFormatInfo NumberFormatInfo { get; set; }
 
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
+        public Encoding Encoding { get; set; }
 
-        public Dictionary<Type, IFormatProvider> FormatProviders { get; }
 
-        public StringSeparator StringSeparator { get; set; } = ",";
+        public StringSeparator StringSeparator { get; set; }
 
-        public StringSplitOptions StringSplitOptions { get; set; } = StringSplitOptions.RemoveEmptyEntries;
+        public StringSplitOptions StringSplitOptions { get; set; }
+
+        Dictionary<Type, IFormatProvider> IConvertSettings.FormatProviders => _formatProviders;
+        IEnumerable<ITranslator> IConvertSettings.Translators => _translators;
+
     }
 }

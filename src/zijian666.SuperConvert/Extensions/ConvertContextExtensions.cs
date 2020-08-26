@@ -21,10 +21,14 @@ namespace zijian666.SuperConvert.Extensions
 
         private static IConvertor<T> ProxyConvertor<T>(IConvertContext context, Type type)
         {
+            if (type.IsGenericTypeDefinition)
+            {
+                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>());
+            }
             var getConvertor = typeof(IConvertSettings).GetMethod("GetConvertor").MakeGenericMethod(type);
             var convertor = getConvertor.Invoke(context.Settings, new[] { context });
             var proxyConvertor = typeof(ProxyConvertor<,>).MakeGenericType(type, typeof(T));
-            return (IConvertor<T>)Activator.CreateInstance(proxyConvertor, convertor);
+            return new TraceConvertor<T>((IConvertor<T>)Activator.CreateInstance(proxyConvertor, convertor));
         }
 
         public static IConvertor<T> GetConvertor<T>(this IConvertContext context)

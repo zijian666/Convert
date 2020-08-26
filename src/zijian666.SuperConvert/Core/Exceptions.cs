@@ -22,10 +22,22 @@ namespace zijian666.SuperConvert.Core
             return string.Format(rs.CANT_CONVERT, text, typeof(T).GetFriendlyName(), typeName);
         }
 
-        public static Exception NotFountConvertor(CultureInfo cultureInfo)
+        public static Exception GenericTypeDefinitionConvertor(string typeName, CultureInfo cultureInfo)
         {
             var rs = ResourceStringManager.GetResource(cultureInfo);
-            return new EntryPointNotFoundException(rs.NOT_FOUND_CONVERTOR);
+            return new NotSupportedException(string.Format(rs.CANT_BUILD_CONVERTOR_BECAUSE_GENERIC_DEFINITION_TYPE, typeName));
+        }
+
+        public static Exception StaticTypeConvertor(string typeName, CultureInfo cultureInfo)
+        {
+            var rs = ResourceStringManager.GetResource(cultureInfo);
+            return new NotSupportedException(string.Format(rs.CANT_BUILD_CONVERTOR_BECAUSE_STATIC_TYPE, typeName));
+        }
+
+        public static Exception NotFountConvertor(string typeName, CultureInfo cultureInfo)
+        {
+            var rs = ResourceStringManager.GetResource(cultureInfo);
+            return new EntryPointNotFoundException(string.Format(rs.CANT_BUILD_CONVERTOR_BECAUSE_NOTFOUND, typeName));
         }
 
         public static Exception ConvertFail<T>(T origin, string typeName, CultureInfo cultureInfo, Exception e = null)

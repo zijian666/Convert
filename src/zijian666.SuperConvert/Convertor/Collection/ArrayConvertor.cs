@@ -55,6 +55,11 @@ namespace zijian666.SuperConvert.Convertor
 
             if (enumerator.IsEmpty)
             {
+                var result = context.Convert<T>(input);
+                if (result.Success)
+                {
+                    return new T[1] { result.Value };
+                }
                 return context.ConvertFail(this, input);
             }
 

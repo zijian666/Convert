@@ -19,6 +19,15 @@ namespace zijian666.SuperConvert.Core
         }
         public IConvertor<T> Build<T>()
         {
+            var outputType = typeof(T);
+            if (outputType.IsGenericTypeDefinition)
+            {
+                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>());
+            }
+            if (outputType.IsAbstract && outputType.IsSealed)
+            {
+                return new TraceConvertor<T>(new StaticTypeConvertor<T>());
+            }
             var convs = _factories
                 .SelectMany(x => x.Create<T>())
                 .Where(x => x != null)

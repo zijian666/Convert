@@ -175,7 +175,7 @@ namespace zijian666.SuperConvert.Extensions
                 string[] generic;
                 if (t.IsGenericTypeDefinition) //泛型定义
                 {
-                    generic = t.GetGenericArguments().Select(x => x.Name).ToArray();
+                    generic = t.GetGenericArguments().Select(x => "").ToArray();
                 }
                 else
                 {

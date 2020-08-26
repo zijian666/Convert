@@ -12,7 +12,8 @@ namespace zijian666.SuperConvert.Convertor
         public ConvertResult<TDictionary> From(IConvertContext context, object input)
         {
             var enumerator = new KeyValueEnumerator<TKey, TValue>(context, input);
-            var dict = Activator.CreateInstance<TDictionary>();
+            var dict = (TDictionary)Activator.CreateInstance(
+                typeof(TDictionary).IsInterface ? typeof(Dictionary<TKey, TValue>) : typeof(TDictionary));
             var rs = ResourceStringManager.GetResource(context.Settings.CultureInfo);
             while (enumerator.MoveNext())
             {
