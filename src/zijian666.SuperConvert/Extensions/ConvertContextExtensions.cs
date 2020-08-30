@@ -23,7 +23,7 @@ namespace zijian666.SuperConvert.Extensions
         {
             if (type.IsGenericTypeDefinition)
             {
-                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>());
+                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>(type));
             }
             var getConvertor = typeof(IConvertSettings).GetMethod("GetConvertor").MakeGenericMethod(type);
             var convertor = getConvertor.Invoke(context.Settings, new[] { context });

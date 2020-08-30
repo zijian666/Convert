@@ -22,7 +22,7 @@ namespace zijian666.SuperConvert.Core
             var outputType = typeof(T);
             if (outputType.IsGenericTypeDefinition)
             {
-                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>());
+                return new TraceConvertor<T>(new GenericTypeDefinitionConvertor<T>(outputType));
             }
             if (outputType.IsAbstract && outputType.IsSealed)
             {
