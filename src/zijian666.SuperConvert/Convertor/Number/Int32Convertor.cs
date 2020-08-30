@@ -8,7 +8,7 @@ using static System.Int32;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    class Int32Convertor : BaseConvertor<int>, IFromConvertible<int>, IFrom<object, int>, IFrom<byte[], int>
+    class Int32Convertor : BaseConvertor<int>, IFromConvertible<int>, IFrom<byte[], int>
     {
         public ConvertResult<int> From(IConvertContext context, bool input) => input ? 1 : 0;
         public ConvertResult<int> From(IConvertContext context, char input) => input;
@@ -112,7 +112,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<int> From(IConvertContext context, object input) => input?.GetHashCode() ?? default;
         public ConvertResult<int> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(int))

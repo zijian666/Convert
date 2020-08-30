@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class SBtyeConvertor : BaseConvertor<sbyte>
                                 , IFromConvertible<sbyte>
-                                , IFrom<object, sbyte>
     {
         public ConvertResult<sbyte> From(IConvertContext context, bool input) => input ? (sbyte)1 : (sbyte)0;
         public ConvertResult<sbyte> From(IConvertContext context, char input) => (sbyte)input;
@@ -116,6 +115,5 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<sbyte> From(IConvertContext context, object input) => context.ConvertFail(this, input);
     }
 }

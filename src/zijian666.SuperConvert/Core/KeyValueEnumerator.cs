@@ -27,7 +27,7 @@ namespace zijian666.SuperConvert.Core
         private readonly IEnumerator<TValue> _enumeratorT;
         private readonly NameObjectCollectionBase _nameObjectCollection;
         private readonly NameValueCollection _nameValueCollection;
-        private readonly PropertyHandler[] _properties;
+        private readonly PropertiesCollection _properties;
         private readonly object _object;
 
         private readonly IDictionary _dictionary;
@@ -165,19 +165,23 @@ namespace zijian666.SuperConvert.Core
                     _dictionaryT = dict;
                     _keyEnumeratorT = dict.Keys.GetEnumerator();
                     _type = InputType.DictionaryT;
-                    HasStringKey = true;
+                    HasStringKey = typeof(TKey) == typeof(string);
                     break;
                 case IDictionary dict:
                     _dictionary = dict;
                     _keyEnumerator = dict.Keys.GetEnumerator();
                     _type = InputType.Dictionary;
-                    HasStringKey = true;
+                    HasStringKey = typeof(TKey) == typeof(string);
                     break;
                 case IEnumerable<TValue> enumerable:
                     _enumeratorT = enumerable.GetEnumerator();
                     _type = InputType.EnumeratorT;
                     break;
                 case IEnumerable enumerable:
+                    if (input is string)
+                    {
+                        goto default;
+                    }
                     _enumerator = enumerable.GetEnumerator();
                     _type = InputType.Enumerator;
                     break;
@@ -190,7 +194,23 @@ namespace zijian666.SuperConvert.Core
                     _type = InputType.Enumerator;
                     break;
                 default:
-                    if (input is TValue value)
+                    if (typeof(TValue) == typeof(object))
+                    {
+                        var inputType = input.GetType();
+                        if (inputType.IsMetaType())
+                        {
+                            _single = (TValue)input;
+                            _type = InputType.Single;
+                        }
+                        else
+                        {
+                            HasStringKey = true;
+                            _object = input;
+                            _properties = PropertyHelper.GetByType(inputType);
+                            _type = InputType.Object;
+                        }
+                    }
+                    else if (input is TValue value)
                     {
                         _single = value;
                         _type = InputType.Single;
@@ -219,7 +239,7 @@ namespace zijian666.SuperConvert.Core
                 InputType.EnumeratorT => _enumeratorT.MoveNext(),
                 InputType.NameValueCollection => _index + 1 < _nameValueCollection.Count,
                 InputType.NameObjectCollection => _index + 1 < _nameObjectCollection.Count,
-                InputType.Object => _index + 1 < _properties.Length,
+                InputType.Object => _index + 1 < _properties.Count,
                 InputType.Single => _index == -1,
                 _ => false,
             };

@@ -18,7 +18,7 @@ namespace zijian666.SuperConvert.Convertor
                 return context.ConvertFail(this, input);
             }
             var obj = Activator.CreateInstance<T>();
-            var properties = PropertyHelper.GetByType(typeof(T));
+            var properties = PropertyHelper.GetByType(OutputType);
             var c1 = 0;
             var c2 = 0;
             var rs = ResourceStringManager.GetResource(context.Settings.CultureInfo);

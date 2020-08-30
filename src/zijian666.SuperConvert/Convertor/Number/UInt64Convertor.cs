@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class UInt64Convertor : BaseConvertor<ulong>
                                 , IFromConvertible<ulong>
-                                , IFrom<object, ulong>
                                 , IFrom<byte[], ulong>
     {
         public ConvertResult<ulong> From(IConvertContext context, bool input) => input ? (ulong)1 : (ulong)0;
@@ -102,7 +101,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<ulong> From(IConvertContext context, object input) => context.ConvertFail(this, input);
         public ConvertResult<ulong> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(ulong))

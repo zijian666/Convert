@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class SingleConvertor : BaseConvertor<float>
                                 , IFromConvertible<float>
-                                , IFrom<object, float>
                                 , IFrom<byte[], float>
     {
         public ConvertResult<float> From(IConvertContext context, bool input) => input ? (float)1 : (float)0;
@@ -110,8 +109,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-
-        public ConvertResult<float> From(IConvertContext context, object input) => context.ConvertFail(this, input);
 
         public ConvertResult<float> From(IConvertContext context, byte[] input)
         {

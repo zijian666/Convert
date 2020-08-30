@@ -19,20 +19,15 @@ namespace zijian666.SuperConvert.Core
         /// <summary>
         /// 类型缓存
         /// </summary>
-        private static readonly ConcurrentDictionary<Type, Dictionary<string, PropertyHandler>> _typeCache =
-            new ConcurrentDictionary<Type, Dictionary<string, PropertyHandler>>();
-
-        /// <summary>
-        /// 表示一个空属性集合
-        /// </summary>
-        private static readonly Dictionary<string, PropertyHandler> _empty = new Dictionary<string, PropertyHandler>();
+        private static readonly ConcurrentDictionary<Type, PropertiesCollection> _typeCache =
+            new ConcurrentDictionary<Type, PropertiesCollection>();
 
         /// <summary>
         /// 根据类型获取操作属性的对象集合
         /// </summary>
         /// <param name="type"> 需要获取属性的类型 </param>
         /// <returns> </returns>
-        public static Dictionary<string, PropertyHandler> GetByType(Type type) =>
+        public static PropertiesCollection GetByType(Type type) =>
             type == null ? null : _typeCache.GetOrAdd(type, Create);
 
         /// <summary>
@@ -40,22 +35,21 @@ namespace zijian666.SuperConvert.Core
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        private static Dictionary<string, PropertyHandler> Create(Type type)
+        private static PropertiesCollection Create(Type type)
         {
             var ps = type.GetProperties();
             var length = ps.Length;
             if (length == 0)
             {
-                _typeCache.TryAdd(type, _empty);
-                return _empty;
+                return PropertiesCollection.Empty;
             }
-            var result = new Dictionary<string, PropertyHandler>(StringComparer.OrdinalIgnoreCase);
+            var result = new List<PropertyHandler>(length);
             for (var i = 0; i < length; i++)
             {
                 var handler = GetPropertyHandler(ps[i]);
-                result.Add(handler.Name, handler);
+                result.Add(handler);
             }
-            return result;
+            return new PropertiesCollection(result);
         }
 
         /// <summary>

@@ -38,5 +38,31 @@ namespace zijian666.SuperConvert.Extensions
             }
             return null;
         }
+
+        public static string GetFormatString(this IConvertSettings settings, Type type)
+        {
+            if (settings.FormatStrings != null && settings.FormatStrings.TryGetValue(type, out var format))
+            {
+                return format;
+            }
+            if (settings.FormatStrings?.Count == 1)
+            {
+                foreach (var item in settings.FormatStrings)
+                {
+                    return item.Value;
+                }
+            }
+            return null;
+        }
+
+        public static string Format(this IConvertSettings settings, IFormattable input)
+        {
+            if (settings == null)
+            {
+                return input.ToString(null, null);
+            }
+            var inputType = input.GetType();
+            return input.ToString(settings.GetFormatString(inputType), settings.GetFormatProvider(inputType));
+        }
     }
 }

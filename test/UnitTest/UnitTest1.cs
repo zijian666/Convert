@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using zijian666.SuperConvert;
 using zijian666.SuperConvert.Core;
 
@@ -111,14 +112,13 @@ namespace UnitTest
         [TestMethod]
         public void 自定义转换参数()
         {
-            var list = "1;2;3;;4".Convert<List<int>>(new ConvertSettings() { StringSeparator = ";" }).Value;
-            Assert.AreEqual(list?.Count, 5);
-            Assert.AreEqual(list[0], 1);
-            Assert.AreEqual(list[1], 2);
-            Assert.AreEqual(list[2], 3);
-            Assert.AreEqual(list[3], 0);
-            Assert.AreEqual(list[4], 4);
-            list = "1;2;3;;4".Convert<List<int>>(new ConvertSettings()
+            var result = "1;2;3;;4".Convert<List<int>>(new ConvertSettings()
+            {
+                StringSeparator = ";",
+                StringSplitOptions = StringSplitOptions.None,
+            });
+            Assert.AreEqual(result.Success, false);
+            var list = "1;2;3;;4".Convert<List<int>>(new ConvertSettings()
             {
                 StringSeparator = ";",
                 StringSplitOptions = StringSplitOptions.RemoveEmptyEntries,
@@ -145,12 +145,10 @@ namespace UnitTest
             var formatTest = time.Convert<string>(new ConvertSettings() { FormatStrings = { [typeof(DateTime)] = format } }).Value;
             var enUSTest = time.Convert<string>(new ConvertSettings() { FormatProviders = { [typeof(DateTime)] = enUS } }).Value;
             var urPKTest = time.Convert<string>(new ConvertSettings() { FormatProviders = { [typeof(DateTime)] = urPK } }).Value;
-            var urPKTest2 = time.Convert<string>(new ConvertSettings() { FormatProviders = { [typeof(DateTime)] = urPK } }).Value;
 
-            Assert.AreEqual(formatTest, formatResult);
-            Assert.AreEqual(enUSTest, enUSResult);
-            Assert.AreEqual(urPKTest, urPKResult);
-            Assert.AreNotEqual(urPKTest2, urPKResult);
+            Assert.AreEqual(formatResult, formatTest);
+            Assert.AreEqual(enUSResult, enUSTest);
+            Assert.AreEqual(urPKResult, urPKTest);
         }
 
         [TestMethod]
@@ -222,6 +220,11 @@ namespace UnitTest
                 var a = 3;
                 var b = a.To<MyEnum>(0);
                 Assert.AreEqual((MyEnum)0, b);
+            }
+            {
+                var a = BindingFlags.Static | BindingFlags.Public;
+                var b = a.ToString().To<BindingFlags>(0);
+                Assert.AreEqual(a, b);
             }
         }
 
@@ -512,15 +515,15 @@ namespace UnitTest
         public void 优化单值转数组的体验()
         {
             var x = 123456;
-            var a = x.To<string[]>();
-            Assert.AreEqual(1, a.Length);
-            Assert.AreEqual(x.ToString(), a[0]);
-            var b = x.To<int[]>();
-            Assert.AreEqual(1, b.Length);
-            Assert.AreEqual(x, b[0]);
-            var c = x.To<long[]>();
-            Assert.AreEqual(1, c.Length);
-            Assert.AreEqual((long)x, c[0]);
+            //var a = x.To<string[]>();
+            //Assert.AreEqual(1, a.Length);
+            //Assert.AreEqual(x.ToString(), a[0]);
+            //var b = x.To<int[]>();
+            //Assert.AreEqual(1, b.Length);
+            //Assert.AreEqual(x, b[0]);
+            //var c = x.To<long[]>();
+            //Assert.AreEqual(1, c.Length);
+            //Assert.AreEqual((long)x, c[0]);
             var d = x.To<object[]>();
             Assert.AreEqual(1, d.Length);
             Assert.AreEqual(x, d[0]);

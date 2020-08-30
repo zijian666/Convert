@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class Int16Convertor : BaseConvertor<short>
                                 , IFromConvertible<short>
-                                , IFrom<object, short>
                                 , IFrom<byte[], short>
     {
 
@@ -117,7 +116,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<short> From(IConvertContext context, object input) => context.ConvertFail(this, input);
         public ConvertResult<short> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(short))

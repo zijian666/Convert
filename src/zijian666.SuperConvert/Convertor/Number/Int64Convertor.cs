@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class Int64Convertor : BaseConvertor<long>
                                 , IFromConvertible<long>
-                                , IFrom<object, long>
                                 , IFrom<byte[], long>
     {
         public ConvertResult<long> From(IConvertContext context, bool input) => input ? (long)1 : (long)0;
@@ -102,7 +101,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<long> From(IConvertContext context, object input) => context.ConvertFail(this, input);
         public ConvertResult<long> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(long))

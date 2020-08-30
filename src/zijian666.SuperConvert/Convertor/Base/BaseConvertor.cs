@@ -31,7 +31,7 @@ namespace zijian666.SuperConvert.Convertor.Base
         {
             _invokers = InitInvokers();
             _invokerTypes = _invokers.Keys.ToArray();
-            Array.Sort(_invokerTypes, (a, b) => a.IsAssignableFrom(b) ? 1 : b.IsAssignableFrom(a) ? -1 : 0);
+            Array.Sort(_invokerTypes, TypeComparer.Instance);
         }
 
 

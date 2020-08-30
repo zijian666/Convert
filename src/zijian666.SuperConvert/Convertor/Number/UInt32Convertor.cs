@@ -13,7 +13,6 @@ namespace zijian666.SuperConvert.Convertor
     /// </summary>
     public class UInt32Convertor : BaseConvertor<uint>
                                 , IFromConvertible<uint>
-                                , IFrom<object, uint>
                                 , IFrom<byte[], uint>
     {
         public ConvertResult<uint> From(IConvertContext context, bool input) => input ? (uint)1 : (uint)0;
@@ -116,7 +115,6 @@ namespace zijian666.SuperConvert.Convertor
             }
             return context.ConvertFail(this, input);
         }
-        public ConvertResult<uint> From(IConvertContext context, object input) => context.ConvertFail(this, input);
         public ConvertResult<uint> From(IConvertContext context, byte[] input)
         {
             if (input == null || input.Length > sizeof(uint))

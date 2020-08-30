@@ -21,6 +21,7 @@ namespace zijian666.SuperConvert.Convertor
         IFrom<StringBuilder, string>,
         IFrom<IPAddress, string>,
         IFrom<object, string>,
+        IFrom<IFormattable, string>,
         IFrom<IConvertible, string>,
         IFrom<IDataReader, string>,
         IFrom<IDataRecord, string>,
@@ -34,8 +35,8 @@ namespace zijian666.SuperConvert.Convertor
 
         public ConvertResult<string> From(IConvertContext context, DBNull input) => default;
 
-        public ConvertResult<string> From(IConvertContext context, IConvertible input) =>
-            input?.ToString(context.Settings.GetFormatProvider(input.GetType()));
+        public ConvertResult<string> From(IConvertContext context, IConvertible input)
+            => input?.ToString(context.Settings.GetFormatProvider(input.GetType()));
 
         public ConvertResult<string> From(IConvertContext context, byte[] input) =>
             (context.Settings.Encoding ?? Encoding.UTF8).GetString(input);
@@ -94,5 +95,6 @@ namespace zijian666.SuperConvert.Convertor
         }
 
         public ConvertResult<string> From(IConvertContext context, IPAddress input) => input.ToString();
+        public ConvertResult<string> From(IConvertContext context, IFormattable input) => context.Settings.Format(input);
     }
 }

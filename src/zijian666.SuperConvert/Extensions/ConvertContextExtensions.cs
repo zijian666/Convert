@@ -36,5 +36,6 @@ namespace zijian666.SuperConvert.Extensions
 
         public static Exception ConvertFail<T1, T2>(this IConvertContext context, Convertor<T1> convertor, T2 input, Exception e = null)
             => Exceptions.ConvertFail(input, convertor.TypeFriendlyName, context.Settings.CultureInfo, e);
+
     }
 }
