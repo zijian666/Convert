@@ -21,7 +21,7 @@ namespace zijian666.SuperConvert.Convertor
             var properties = PropertyHelper.GetByType(OutputType);
             var c1 = 0;
             var c2 = 0;
-            var rs = ResourceStringManager.GetResource(context.Settings.CultureInfo);
+            var rs = context.Settings.GetResourceStrings();
             while (enumerator.MoveNext())
             {
                 c1++;

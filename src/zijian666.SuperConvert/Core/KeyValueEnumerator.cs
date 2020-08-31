@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data;
 using System.Reflection;
 using zijian666.SuperConvert.Extensions;
@@ -136,6 +137,12 @@ namespace zijian666.SuperConvert.Core
                     _type = InputType.NameObjectCollection;
                     HasStringKey = true;
                     break;
+                case DataRowView rowView:
+                    _row = rowView.Row;
+                    _table = rowView.Row.Table;
+                    _type = InputType.DataRow;
+                    HasStringKey = true;
+                    break;
                 case DataRow row:
                     _row = row;
                     _table = row.Table;
@@ -146,6 +153,10 @@ namespace zijian666.SuperConvert.Core
                     _dataSet = dataSet;
                     _type = InputType.DataSet;
                     HasStringKey = true;
+                    break;
+                case DataView dataView:
+                    _table = dataView.ToTable();
+                    _type = InputType.DataTable;
                     break;
                 case DataTable table:
                     _table = table;
@@ -176,6 +187,11 @@ namespace zijian666.SuperConvert.Core
                 case IEnumerable<TValue> enumerable:
                     _enumeratorT = enumerable.GetEnumerator();
                     _type = InputType.EnumeratorT;
+                    break;
+                case IListSource listSource:
+                    var list = listSource.GetList();
+                    _enumerator = list.GetEnumerator();
+                    _type = InputType.Enumerator;
                     break;
                 case IEnumerable enumerable:
                     if (input is string)
@@ -235,7 +251,7 @@ namespace zijian666.SuperConvert.Core
                 InputType.DataTable => _index + 1 < _table.Rows.Count,
                 InputType.Dictionary => _keyEnumerator.MoveNext(),
                 InputType.Enumerator => _enumerator.MoveNext(),
-                InputType.DictionaryT => _keyEnumerator.MoveNext(),
+                InputType.DictionaryT => _keyEnumeratorT.MoveNext(),
                 InputType.EnumeratorT => _enumeratorT.MoveNext(),
                 InputType.NameValueCollection => _index + 1 < _nameValueCollection.Count,
                 InputType.NameObjectCollection => _index + 1 < _nameObjectCollection.Count,

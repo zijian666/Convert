@@ -1,7 +1,7 @@
 ﻿using System;
-using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Interface;
 
-namespace zijian666.SuperConvert.Interface
+namespace zijian666.SuperConvert.Core
 {
     public readonly struct MatchedConvertor<T> : IEquatable<MatchedConvertor<T>>, IComparable<MatchedConvertor<T>>
     {

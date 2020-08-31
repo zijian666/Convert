@@ -64,5 +64,8 @@ namespace zijian666.SuperConvert.Extensions
             var inputType = input.GetType();
             return input.ToString(settings.GetFormatString(inputType), settings.GetFormatProvider(inputType));
         }
+
+        public static ResourceStrings GetResourceStrings(this IConvertSettings settings)
+            => ResourceStringManager.GetResource(settings?.CultureInfo);
     }
 }

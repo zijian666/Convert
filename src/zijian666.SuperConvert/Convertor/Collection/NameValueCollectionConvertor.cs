@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
@@ -7,14 +7,17 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class DictionaryConvertor<TDictionary, TKey, TValue> : BaseConvertor<TDictionary>, IFrom<object, TDictionary>
-        where TDictionary : class, IDictionary<TKey, TValue>
+    public class NameValueCollectionConvertor<T> : BaseConvertor<T>, IFrom<object, T>
+        where T : NameValueCollection
     {
-        public ConvertResult<TDictionary> From(IConvertContext context, object input)
+        public ConvertResult<T> From(IConvertContext context, object input)
         {
-            var enumerator = new KeyValueEnumerator<TKey, TValue>(context, input);
-            var dict = (TDictionary)Activator.CreateInstance(
-                typeof(TDictionary).IsInterface ? typeof(Dictionary<TKey, TValue>) : typeof(TDictionary));
+            var enumerator = new KeyValueEnumerator<string, string>(context, input);
+            if (!enumerator.HasStringKey)
+            {
+                return context.ConvertFail(this, input);
+            }
+            var collection = Activator.CreateInstance<T>();
             var rs = context.Settings.GetResourceStrings();
             while (enumerator.MoveNext())
             {
@@ -32,9 +35,9 @@ namespace zijian666.SuperConvert.Convertor
                     return new InvalidCastException(message, key.Exception);
                 }
 
-                dict.Add(key.Value, value.Value);
+                collection.Add(key.Value, value.Value);
             }
-            return dict;
+            return collection;
         }
     }
 }

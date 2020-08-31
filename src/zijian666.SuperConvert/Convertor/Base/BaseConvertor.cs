@@ -76,26 +76,6 @@ namespace zijian666.SuperConvert.Convertor.Base
             }
 
 
-            if (translation)
-            {
-                var type = input.GetType();
-                var values = context.Settings.Translators?.Where(x => x.CanTranslate(type)).Select(x => x.Translate(context, input));
-                foreach (var value in values ?? Array.Empty<object>())
-                {
-                    if (input != value)
-                    {
-                        var result = TryFrom(context, value, false, ref exceptions);
-                        if (result.Success)
-                        {
-                            return result;
-                        }
-                        //如果异常,下面还可以尝试其他方案
-                        exceptions += result.Exception;
-                    }
-                }
-            }
-
-
             //获取指定输入类型的转换方法调用器
             var invokers = GetInvokers(input.GetType());
             foreach (var invoker in invokers)
@@ -112,6 +92,30 @@ namespace zijian666.SuperConvert.Convertor.Base
                 //如果异常,下面还可以尝试其他方案
                 exceptions += result.Exception;
             }
+
+            if (translation)
+            {
+                var type = input.GetType();
+                var values = context.Settings.Translators?.Where(x => x.CanTranslate(type)).Select(x => x.Translate(context, input));
+                foreach (var value in values ?? Array.Empty<object>())
+                {
+                    if (input != value)
+                    {
+                        if (value is T t)
+                        {
+                            return Ok(t);
+                        }
+                        var result = TryFrom(context, value, false, ref exceptions);
+                        if (result.Success)
+                        {
+                            return result;
+                        }
+                        //如果异常,下面还可以尝试其他方案
+                        exceptions += result.Exception;
+                    }
+                }
+            }
+
 
             return ConvertResult<T>.NULL;
 
@@ -185,6 +189,10 @@ namespace zijian666.SuperConvert.Convertor.Base
             }
 
             var message = Exceptions.ConvertFailMessage(input, TypeFriendlyName, context.Settings.CultureInfo);
+            if (exceptions == null)
+            {
+                return new InvalidCastException(message);
+            }
             return exceptions.ToException(message);
         }
 

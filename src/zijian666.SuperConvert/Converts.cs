@@ -44,6 +44,7 @@ namespace zijian666.SuperConvert
         {
             var assemblies = GetAssemblies();
             var factories = new List<IConvertorFactory>();
+            var translators = new List<ITranslator>();
             var types = assemblies.SelectMany(x => x.SafeGetTypes())
                 .Where(x => !x.Name.StartsWith("<") && x.Instantiable() && x.GetConstructor(Type.EmptyTypes) != null);
             foreach (var type in types)
@@ -53,6 +54,13 @@ namespace zijian666.SuperConvert
                     if (type.Instantiable() && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         factories.Add((IConvertorFactory)Activator.CreateInstance(type));
+                    }
+                }
+                else if (typeof(ITranslator).IsAssignableFrom(type))
+                {
+                    if (type.Instantiable() && type.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        translators.Add((ITranslator)Activator.CreateInstance(type));
                     }
                 }
                 else
@@ -75,6 +83,7 @@ namespace zijian666.SuperConvert
                 NumberFormatInfo = NumberFormatInfo.CurrentInfo,
                 StringSplitOptions = StringSplitOptions.RemoveEmptyEntries,
             };
+            _settings.Translators.AddRange(translators);
         }
 
 

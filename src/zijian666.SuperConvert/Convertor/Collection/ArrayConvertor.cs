@@ -69,7 +69,7 @@ namespace zijian666.SuperConvert.Convertor
                 var result = enumerator.GetValue();
                 if (!result.Success)
                 {
-                    var rs = ResourceStringManager.GetResource(context.Settings.CultureInfo);
+                    var rs = context.Settings.GetResourceStrings();
                     var message = string.Format(rs.COLLECTION_ADD_FAIL, $"List<{TypeFriendlyName}>", list.Count, enumerator.OriginalValue);
                     return new InvalidCastException(message, result.Exception);
                 }
