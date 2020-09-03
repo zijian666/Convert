@@ -607,5 +607,22 @@ namespace UnitTest
                 Assert.IsTrue(Converts.EqualsRandomMD5("123456", g));
             }
         }
+
+        [TestMethod]
+        public void 匿名类转换()
+        {
+            var user1 = new { ID = 1, Name = "blqw" }.To<User>();
+            Assert.AreEqual(1, user1.ID);
+            Assert.AreEqual("blqw", user1.Name);
+
+            var user2 = new { Id = 1, NAME = "blqw" }.To<User>();
+            Assert.AreEqual(1, user2.ID);
+            Assert.AreEqual("blqw", user2.Name);
+
+            dynamic user3 = user1.Convert(new { ID = 1, Name = "blqw" }.GetType());
+            Assert.AreEqual(1, user3.ID);
+            Assert.AreEqual("blqw", user3.Name);
+
+        }
     }
 }

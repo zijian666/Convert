@@ -15,7 +15,6 @@ obj.To(Type outputType, out succeed);
 ```
 
 ## 代码展示
-更多示例代码: [demo](https://github.com/blqw/blqw.Converts/blob/master/Demo/Program.cs) , [单元测试1](https://github.com/blqw/blqw.Converts/blob/master/UnitTest/%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95.cs)  
 ```csharp
 //最基本
 "1".To<int>();
@@ -40,42 +39,8 @@ Dictionary<Guid, Dictionary<int, User>>
     .To<Dictionary<string, Dictionary<DateTime, NameValueCollection>>>(); //不能理解就算了
 ```
 ## 扩展自定义转换器
-> 扩展转换行为是以**目标类型**为参照的  
-> 例如要转换为自定义类型`MyClass`就需要**实现`IConvertor<MyClass>`**接口  
-> 或者直接**继承基类 `BaseConvertor<MyClass>`**,并保留默认**无参构造函数**  
-> IOC组件会自动装载实现`IConvertor`的全部类型
+待完善
 
-#### 1. `MyClass`定义
-```csharp
-class MyClass
-{
-    public int Number { get; set; }
-}
-```
-#### 2. 转换器代码
-```csharp
-class MyClassConvertor : BaseConvertor<MyClass>
-{
-    protected override MyClass ChangeType(ConvertContext context, object input, Type outputType, out bool success)
-    {
-        var i = context.Get<int>().ChangeType(context, input, typeof(int), out success);
-        return success ? new MyClass() { Number = i } : null;
-    }
-
-    protected override MyClass ChangeType(ConvertContext context, string input, Type outputType, out bool success)
-    {
-        var i = context.Get<int>().ChangeType(context, input, typeof(int), out success);
-        return success ? new MyClass() { Number = i } : null;
-    }
-}
-```
-#### 3. 测试代码
-```csharp
-var x = "1234".To<MyClass>(null);
-Console.WriteLine(x?.Number); //1234
-x = "abcd".To<MyClass>(null);
-Console.WriteLine(x?.Number); //null
-```
 ## 其他功能
 ```csharp
 //数字转大写
