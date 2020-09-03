@@ -1,5 +1,6 @@
-# blqw.Convert3
-超级转换器
+# zijian666.Converts
+超级转换器 
+> 重新设计, 老项目已经停止维护 [Converts](https://github.com/blqw/blqw.Converts)
 
 > 对象转换，从未如此简单  
 ```csharp
@@ -13,7 +14,7 @@ obj.To(Type outputType, out succeed);
 ```
 
 ## 代码展示
-更多示例代码: [demo](https://github.com/blqw/blqw.Convert3/blob/master/Demo/Program.cs) , [单元测试1](https://github.com/blqw/blqw.Convert3/blob/master/UnitTest/%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95.cs)  
+更多示例代码: [demo](https://github.com/blqw/blqw.Converts/blob/master/Demo/Program.cs) , [单元测试1](https://github.com/blqw/blqw.Converts/blob/master/UnitTest/%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95.cs)  
 ```csharp
 //最基本
 "1".To<int>();
@@ -77,41 +78,31 @@ Console.WriteLine(x?.Number); //null
 ## 其他功能
 ```csharp
 //数字转大写
-//参数说明:1.需要转换的数字,2:是否是简体中文,3:是否需要加上圆角分(只保留两位),4:是否需要支持15位以上的数字
-Console.WriteLine(Convert3.NumberToUpper("123456456.789", true, true, false)); //一亿二千三百四十五万六千四百五十六元七角八分
-
-//汉字转拼音
-Console.WriteLine(Convert3.ToPinyin("冰麟轻武", PinyinMode.AllFirst));      //BLQW
-Console.WriteLine(Convert3.ToPinyin("冰麟轻武", PinyinMode.First));         //B
-Console.WriteLine(Convert3.ToPinyin("冰麟轻武", PinyinMode.Full));          //BingLinQingWu
-Console.WriteLine(Convert3.ToPinyin("冰麟轻武", PinyinMode.FullWithSplit)); //Bing Lin Qing Wu
+Console.WriteLine(Converts.ToChineseAmount("123456456.789")); //壹亿贰仟叁佰肆拾伍万陆仟肆佰伍拾陆元柒角捌分
+Console.WriteLine(Converts.ToChineseNumber("123456456.789")); //一亿二千三百四十五万六千四百五十六点七八九
+Console.WriteLine(Converts.ToChineseAmount("123456456.789", true)); //一亿二千三百四十五万六千四百五十六元七角八分
 
 //全半角转换
-Console.WriteLine(Convert3.ToDBC("，１２３４５６７ａｋｓ"));//,1234567aks
-Console.WriteLine(Convert3.ToSBC("!1f23d.?@"));         //！１ｆ２３ｄ．？＠
+Console.WriteLine(Converts.ToDBC("，１２３４５６７ａｋｓ"));//,1234567aks
+Console.WriteLine(Converts.ToSBC("!1f23d.?@"));         //！１ｆ２３ｄ．？＠
 
 //摘要/加密
-Console.WriteLine(Convert3.ToMD5("123456"));    //e10adc3949ba59abbe56e057f20f883e
-Console.WriteLine(Convert3.ToSHA1("123456"));   //7c4a8d09ca3762af61e59520943dc26494f8941b
-
-//转为动态类型
-var a = new Dictionary<string, object>() { ["id"] = 1, ["name"] = "blqw" };
-Console.WriteLine(Convert3.ToDynamic(a).name);   //blqw
-Console.WriteLine(Convert3.ToDynamic(a).id == 1);//True
+Console.WriteLine(Converts.ToMD5("123456"));    //e10adc3949ba59abbe56e057f20f883e
+Console.WriteLine(Converts.ToSHA1("123456"));   //7c4a8d09ca3762af61e59520943dc26494f8941b
 
 //随机加密
 var arr = new[]
 {
-    Convert3.ToRandomMD5("123456"),
-    Convert3.ToRandomMD5("123456"),
-    Convert3.ToRandomMD5("123456"),
-    Convert3.ToRandomMD5("123456"),
-    Convert3.ToRandomMD5("123456"),
+    Converts.ToRandomMD5("123456"),
+    Converts.ToRandomMD5("123456"),
+    Converts.ToRandomMD5("123456"),
+    Converts.ToRandomMD5("123456"),
+    Converts.ToRandomMD5("123456"),
 };
 
 foreach (var g in arr)
 {
-    Console.WriteLine($"{g} : {Convert3.EqualsRandomMD5("123456", g)}");
+    Console.WriteLine($"{g} : {Converts.EqualsRandomMD5("123456", g)}");
 }
 /*
 fa91eefc-e903-dbcf-394b-0b757987357b : True
@@ -124,5 +115,4 @@ fa91eefc-e903-dbcf-394b-0b757987357b : True
 
 
 ## 更新说明 
-#### [4.0.0.0] 2020.09.03
-* 全新设计重构
+* 重新设计, 敬请期待

@@ -562,5 +562,50 @@ namespace UnitTest
             var b = a.To<object>();
             Assert.AreEqual(null, b);
         }
+
+
+
+        [TestMethod]
+        public void 数字大写转换()
+        {
+            var a = Converts.ToChineseNumber("123456456.789");
+            Assert.AreEqual("一亿二千三百四十五万六千四百五十六点七八九", a);
+            var b = Converts.ToChineseAmount("123456456.789", true);
+            Assert.AreEqual("一亿二千三百四十五万六千四百五十六元七角八分", b);
+
+            var c = Converts.ToChineseAmount("123456456.789");
+            Assert.AreEqual("壹亿贰仟叁佰肆拾伍万陆仟肆佰伍拾陆元柒角捌分", c);
+        }
+
+
+        [TestMethod]
+        public void 全半角转换()
+        {
+            var a = Converts.ToDBC("，１２３４５６７ａｋｓ");
+            Assert.AreEqual(",1234567aks", a);
+            var b = Converts.ToSBC("!1f23d.?@");
+            Assert.AreEqual("！１ｆ２３ｄ．？＠", b);
+            var c = Converts.ToSBC("恭喜发财!");
+            Assert.AreEqual("恭喜发财！", c);
+        }
+
+        [TestMethod]
+        public void 随机加密和校验()
+        {
+            var arr = new[]
+            {
+                Converts.ToRandomMD5("123456"),
+                Converts.ToRandomMD5("123456"),
+                Converts.ToRandomMD5("123456"),
+                Converts.ToRandomMD5("123456"),
+                Converts.ToRandomMD5("123456"),
+            };
+
+            foreach (var g in arr)
+            {
+                Console.WriteLine($"{g} : {Converts.EqualsRandomMD5("123456", g)}");
+                Assert.IsTrue(Converts.EqualsRandomMD5("123456", g));
+            }
+        }
     }
 }

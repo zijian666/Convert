@@ -9,15 +9,11 @@ namespace zijian666.SuperConvert
         /// <summary>
         /// 将数字文本转换成大写
         /// </summary>
-        /// <param name="number"> 数字文本 </param>
-        /// <param name="isSimplified"> 是否只使用简体中文,默认:否 </param>
-        /// <param name="isMoney"> 是否是金额模式(忽略小数点后3位,并加上单位"元,角,分或整"),否认:是 </param>
-        /// <param name="veryBig"> 是否开启大数字文本模式(接受15位以上整数,及10位以上小数),否认:否 </param>
         /// <exception cref="ArgumentNullException"> <paramref name="number" /> is <see langword="null" />. </exception>
         /// <exception cref="ArgumentException"> <paramref name="number" />不是数字 </exception>
         /// <exception cref="RegexMatchTimeoutException"> 发生超时。有关超时的更多信息，请参见“备注”节。 </exception>
-        public static string ToString(string number, bool isSimplified = false, bool isMoney = true,
-            bool veryBig = false)
+        private static string ToChineseNumber(string number, bool simplified, bool isMoney,
+            bool bigger)
         {
             if (number == null)
             {
@@ -32,17 +28,17 @@ namespace zijian666.SuperConvert
             unsafe
             {
                 fixed (char* p = number)
-                fixed (char* upnum = _upperNumbers[isSimplified.GetHashCode()])
-                fixed (char* numut = _numberUnits[isSimplified.GetHashCode()])
-                fixed (char* monut = _moneyUnits[isSimplified.GetHashCode()])
+                fixed (char* upnum = _upperNumbers[simplified.GetHashCode()])
+                fixed (char* numut = _numberUnits[simplified.GetHashCode()])
+                fixed (char* monut = _moneyUnits[simplified.GetHashCode()])
                 {
                     var mdec = m.Groups["decimal"];
                     var mInt = m.Groups["integer"];
-                    if ((mInt.Length > 15) && (veryBig == false))
+                    if ((mInt.Length > 15) && (bigger == false))
                     {
                         throw new ArgumentException("不建议转换超过15位的整数,除非将veryBig参数设置为true", nameof(number));
                     }
-                    if ((mdec.Length > 10) && (veryBig == false))
+                    if ((mdec.Length > 10) && (bigger == false))
                     {
                         throw new ArgumentException("不建议转换超过10位的小,除非将veryBig参数设置为true", nameof(number));
                     }
@@ -81,6 +77,30 @@ namespace zijian666.SuperConvert
                 }
             }
         }
+
+        /// <summary>
+        /// 将数字文本转换成大写
+        /// </summary>
+        /// <param name="number"> 数字文本 </param>
+        /// <param name="simplified"> 简体中文,默认:是 </param>
+        /// <param name="bigger"> 大数字文本模式(接受15位以上整数,及10位以上小数),默认:否 </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="number" /> is <see langword="null" />. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="number" />不是数字 </exception>
+        /// <exception cref="RegexMatchTimeoutException"> 发生超时。有关超时的更多信息，请参见“备注”节。 </exception>
+        public static string ToChineseNumber(string number, bool simplified = true, bool bigger = false)
+            => ToChineseNumber(number, simplified, false, bigger);
+
+        /// <summary>
+        /// 将数字文本转换成大写金额
+        /// </summary>
+        /// <param name="number"> 数字文本 </param>
+        /// <param name="simplified"> 简体中文,默认:否 </param>
+        /// <param name="bigger"> 大数字文本模式(接受15位以上整数,及10位以上小数),默认:否 </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="number" /> is <see langword="null" />. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="number" />不是数字 </exception>
+        /// <exception cref="RegexMatchTimeoutException"> 发生超时。有关超时的更多信息，请参见“备注”节。 </exception>
+        public static string ToChineseAmount(string number, bool simplified = false, bool bigger = false)
+            => ToChineseNumber(number, simplified, true, bigger);
 
         //操作小数部分
         private static unsafe string ParseDecimal(char* p, char* end, char* upnum)
@@ -221,16 +241,16 @@ namespace zijian666.SuperConvert
         /// <summary>
         /// 大写数字
         /// </summary>
-        private static readonly string[] _upperNumbers = { "零壹貳叁肆伍陸柒捌玖點", "零一二三四五六七八九点" };
+        private static readonly string[] _upperNumbers = { "零壹贰叁肆伍陆柒捌玖點", "零一二三四五六七八九点" };
 
         /// <summary>
         /// 数字单位
         /// </summary>
-        private static readonly string[] _numberUnits = { "仟萬拾佰億負", "千万十百亿负" };
+        private static readonly string[] _numberUnits = { "仟万拾佰亿负", "千万十百亿负" };
 
         /// <summary>
         /// 金钱单位
         /// </summary>
-        private static readonly string[] _moneyUnits = { "圓角分", "元角分" };
+        private static readonly string[] _moneyUnits = { "元角分", "元角分" };
     }
 }
