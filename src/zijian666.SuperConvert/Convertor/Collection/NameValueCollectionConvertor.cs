@@ -7,7 +7,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class NameValueCollectionConvertor<T> : BaseConvertor<T>, IFrom<object, T>
+    public class NameValueCollectionConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>
         where T : NameValueCollection
     {
         public ConvertResult<T> From(IConvertContext context, object input)

@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="ulong"/> 转换器
     /// </summary>
-    public class UInt64Convertor : BaseConvertor<ulong>
+    public class UInt64Convertor : FromConvertor<ulong>
                                 , IFromConvertible<ulong>
                                 , IFrom<byte[], ulong>
     {

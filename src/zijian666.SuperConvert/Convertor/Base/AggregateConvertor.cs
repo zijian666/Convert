@@ -13,7 +13,7 @@ namespace zijian666.SuperConvert.Convertor.Base
     /// <remarks>
     /// 如果转换失败,会继续尝试下一个转换器,直到成功或全部失败
     /// </remarks>
-    internal sealed class AggregateConvertor<T> : Convertor<T>, IConvertor<T>
+    internal sealed class AggregateConvertor<T> : BaseConvertor<T>, IConvertor<T>
     {
         public AggregateConvertor(IEnumerable<IConvertor<T>> convertors)
         {

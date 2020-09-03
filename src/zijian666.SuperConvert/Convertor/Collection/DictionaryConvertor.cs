@@ -7,7 +7,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class DictionaryConvertor<TDictionary, TKey, TValue> : BaseConvertor<TDictionary>, IFrom<object, TDictionary>
+    public class DictionaryConvertor<TDictionary, TKey, TValue> : AllowNullConvertor<TDictionary>, IFrom<object, TDictionary>
         where TDictionary : class, IDictionary<TKey, TValue>
     {
         public ConvertResult<TDictionary> From(IConvertContext context, object input)

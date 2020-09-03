@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="decimal" /> 转换器
     /// </summary>
-    public class DecimalConvertor : BaseConvertor<decimal>, IFromConvertible<decimal>, IFrom<byte[], decimal>, IFrom<Guid, decimal>
+    public class DecimalConvertor : FromConvertor<decimal>, IFromConvertible<decimal>, IFrom<byte[], decimal>, IFrom<Guid, decimal>
     {
         public ConvertResult<decimal> From(IConvertContext context, bool input) => input ? One : Zero;
         public ConvertResult<decimal> From(IConvertContext context, char input) => input;

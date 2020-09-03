@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="byte" /> 转换器
     /// </summary>
-    public class ByteConvertor : BaseConvertor<byte>, IFromConvertible<byte>
+    public class ByteConvertor : FromConvertor<byte>, IFromConvertible<byte>
     {
         public ConvertResult<byte> From(IConvertContext context, bool input) => input ? (byte)1 : (byte)0;
         public ConvertResult<byte> From(IConvertContext context, char input) => (byte)input;

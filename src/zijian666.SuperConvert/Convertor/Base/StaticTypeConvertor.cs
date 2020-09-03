@@ -3,7 +3,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor.Base
 {
-    class StaticTypeConvertor<T> : Convertor<T>
+    class StaticTypeConvertor<T> : BaseConvertor<T>
     {
         public override ConvertResult<T> Convert(IConvertContext context, object input)
         {

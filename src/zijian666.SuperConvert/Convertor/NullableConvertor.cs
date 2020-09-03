@@ -6,7 +6,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class NullableConvertor<TValue> : BaseConvertor<TValue?>, IConvertor<TValue?>
+    public class NullableConvertor<TValue> : FromConvertor<TValue?>, IConvertor<TValue?>
         where TValue : struct
     {
         public override ConvertResult<TValue?> Convert(IConvertContext context, object input)

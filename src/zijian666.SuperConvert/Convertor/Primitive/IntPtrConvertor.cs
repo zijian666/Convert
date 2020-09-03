@@ -7,7 +7,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class IntPtrConvertor : BaseConvertor<IntPtr>
+    public class IntPtrConvertor : FromConvertor<IntPtr>
                                  , IFrom<int, IntPtr>
                                  , IFrom<long, IntPtr>
                                  , IFrom<object, IntPtr>

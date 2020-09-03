@@ -34,7 +34,7 @@ namespace zijian666.SuperConvert.Extensions
         public static IConvertor<T> GetConvertor<T>(this IConvertContext context)
             => context?.Settings.GetConvertor<T>(context);
 
-        public static Exception ConvertFail<T1, T2>(this IConvertContext context, Convertor<T1> convertor, T2 input, Exception e = null)
+        public static Exception ConvertFail<T1, T2>(this IConvertContext context, BaseConvertor<T1> convertor, T2 input, Exception e = null)
             => Exceptions.ConvertFail(input, convertor.TypeFriendlyName, context.Settings.CultureInfo, e);
 
     }

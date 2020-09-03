@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// 布尔值转换器
     /// </summary>
-    public class BooleanConvertor : BaseConvertor<bool>, IFromConvertible<bool>, IFrom<object, bool>
+    public class BooleanConvertor : FromConvertor<bool>, IFromConvertible<bool>, IFrom<object, bool>
     {
         public ConvertResult<bool> From(IConvertContext context, bool input) => input;
         public ConvertResult<bool> From(IConvertContext context, char input) => input != 0;

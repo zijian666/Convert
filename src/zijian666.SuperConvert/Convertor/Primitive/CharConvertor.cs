@@ -10,7 +10,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="char" /> 转换器
     /// </summary>
-    public class CharConvertor : BaseConvertor<char>, IFromConvertible<char>, IFrom<byte[], char>
+    public class CharConvertor : FromConvertor<char>, IFromConvertible<char>, IFrom<byte[], char>
     {
         public ConvertResult<char> From(IConvertContext context, bool input) => input ? 'Y' : 'N';
         public ConvertResult<char> From(IConvertContext context, char input) => input;

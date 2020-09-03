@@ -8,7 +8,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class DataTableConvertor : BaseConvertor<DataTable>
+    public class DataTableConvertor : AllowNullConvertor<DataTable>
         , IFrom<DataView, DataTable>
         , IFrom<IDataReader, DataTable>
         , IFrom<IEnumerator, DataTable>

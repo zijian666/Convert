@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="long"/> 转换器
     /// </summary>
-    public class Int64Convertor : BaseConvertor<long>
+    public class Int64Convertor : FromConvertor<long>
                                 , IFromConvertible<long>
                                 , IFrom<byte[], long>
     {

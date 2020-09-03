@@ -5,7 +5,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class ArrayListConvertor<T> : BaseConvertor<T>, IFrom<string, T>, IFrom<object, T>
+    public class ArrayListConvertor<T> : AllowNullConvertor<T>, IFrom<string, T>, IFrom<object, T>
         where T : IList
     {
 

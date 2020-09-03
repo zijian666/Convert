@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="float"/> 转换器
     /// </summary>
-    public class SingleConvertor : BaseConvertor<float>
+    public class SingleConvertor : FromConvertor<float>
                                 , IFromConvertible<float>
                                 , IFrom<byte[], float>
     {

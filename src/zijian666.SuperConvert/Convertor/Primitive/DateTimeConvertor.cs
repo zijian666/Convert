@@ -10,7 +10,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="DateTime" /> 转换器
     /// </summary>
-    public class DateTimeConvertor : BaseConvertor<DateTime>, IFrom<string, DateTime>
+    public class DateTimeConvertor : FromConvertor<DateTime>, IFrom<string, DateTime>
     {
         /// <summary>
         /// 日期格式化字符

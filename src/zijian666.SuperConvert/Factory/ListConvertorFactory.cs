@@ -48,7 +48,7 @@ namespace zijian666.SuperConvert.Factory
                 yield break;
             }
 
-            if (typeof(T).IsAssignableFrom(typeof(ArrayList)))
+            if (typeof(T).IsAssignableFrom(typeof(ArrayList)) && typeof(T) != typeof(object))
             {
                 var convertor = new ArrayListConvertor<ArrayList>();
                 var proxy = new ProxyConvertor<ArrayList, T>(convertor);

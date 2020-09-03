@@ -5,7 +5,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class HashtableConvertor<T> : BaseConvertor<T>, IFrom<object, T>
+    public class HashtableConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>
         where T : IDictionary
     {
         public ConvertResult<T> From(IConvertContext context, object input)

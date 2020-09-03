@@ -6,7 +6,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class EnumConvertor<T> : BaseConvertor<T>,
+    public class EnumConvertor<T> : FromConvertor<T>,
         IFrom<string, T>,
         IFrom<IConvertible, T>
     {

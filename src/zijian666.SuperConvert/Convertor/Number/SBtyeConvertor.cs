@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="sbyte"/> 转换器
     /// </summary>
-    public class SBtyeConvertor : BaseConvertor<sbyte>
+    public class SBtyeConvertor : FromConvertor<sbyte>
                                 , IFromConvertible<sbyte>
     {
         public ConvertResult<sbyte> From(IConvertContext context, bool input) => input ? (sbyte)1 : (sbyte)0;

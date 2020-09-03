@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="Guid" /> 转换器
     /// </summary>
-    public class GuidConvertor : BaseConvertor<Guid>, IFrom<string, Guid>, IFrom<byte[], Guid>, IFrom<decimal, Guid>
+    public class GuidConvertor : FromConvertor<Guid>, IFrom<string, Guid>, IFrom<byte[], Guid>, IFrom<decimal, Guid>
     {
         public ConvertResult<Guid> From(IConvertContext context, string input)
         {

@@ -6,9 +6,9 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class ObjectConvertor<T> : BaseConvertor<T>, IFrom<object, T>
+    public class ObjectConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>
     {
-        public override uint Priority { get; } = 0;
+        public override uint Priority => 0;
 
         public ConvertResult<T> From(IConvertContext context, object input)
         {

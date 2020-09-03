@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="TimeSpan" /> 转换器
     /// </summary>
-    class TimeSpanConvertor : BaseConvertor<TimeSpan>, IFrom<string, TimeSpan>, IFrom<IConvertible, TimeSpan>
+    class TimeSpanConvertor : FromConvertor<TimeSpan>, IFrom<string, TimeSpan>, IFrom<IConvertible, TimeSpan>
     {
         /// <summary>
         /// 日期格式化字符

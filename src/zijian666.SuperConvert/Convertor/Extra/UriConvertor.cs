@@ -6,7 +6,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class UriConvertor : BaseConvertor<Uri>, IFrom<string, Uri>
+    public class UriConvertor : AllowNullConvertor<Uri>, IFrom<string, Uri>
     {
         public ConvertResult<Uri> From(IConvertContext context, string input)
         {

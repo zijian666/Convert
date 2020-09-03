@@ -12,10 +12,15 @@ namespace zijian666.SuperConvert.Factory
     {
         public IEnumerable<MatchedConvertor<T>> Create<T>()
         {
-            var convertor = Build<T>();
-            if (convertor != null)
+            if (CanBuild<T>())
             {
-                yield return new MatchedConvertor<T>(convertor, 1, MacthedLevel.Subclass);
+                var convertor = new ObjectConvertor<T>();
+                yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Subclass);
+            }
+            else if (typeof(object) == typeof(T))
+            {
+                var convertor = new ObjectConvertor<T>();
+                yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Full);
             }
         }
 

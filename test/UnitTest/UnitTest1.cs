@@ -555,6 +555,12 @@ namespace UnitTest
 
         }
 
-
+        [TestMethod]
+        public void NullToObject()
+        {
+            object a = null;
+            var b = a.To<object>();
+            Assert.AreEqual(null, b);
+        }
     }
 }

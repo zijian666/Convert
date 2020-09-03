@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="double" /> 转换器
     /// </summary>
-    public class DoubleConertor : BaseConvertor<double>, IFromConvertible<double>, IFrom<byte[], double>
+    public class DoubleConertor : FromConvertor<double>, IFromConvertible<double>, IFrom<byte[], double>
     {
         public ConvertResult<double> From(IConvertContext context, bool input) => input ? 1 : 0;
         public ConvertResult<double> From(IConvertContext context, char input) => input;

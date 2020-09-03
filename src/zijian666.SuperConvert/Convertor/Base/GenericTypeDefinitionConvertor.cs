@@ -5,7 +5,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor.Base
 {
-    class GenericTypeDefinitionConvertor<T> : Convertor<T>
+    class GenericTypeDefinitionConvertor<T> : BaseConvertor<T>
     {
         public override string TypeFriendlyName { get; }
         public GenericTypeDefinitionConvertor(Type type) => TypeFriendlyName = type.GetFriendlyName();

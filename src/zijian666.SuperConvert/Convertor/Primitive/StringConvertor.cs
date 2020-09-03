@@ -11,7 +11,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    class StringConvertor : BaseConvertor<string>,
+    class StringConvertor : AllowNullConvertor<string>,
         IFrom<Type, string>,
         IFrom<byte[], string>,
         IFrom<bool, string>,
@@ -26,14 +26,10 @@ namespace zijian666.SuperConvert.Convertor
         IFrom<IDataReader, string>,
         IFrom<IDataRecord, string>,
         IFrom<IEnumerator, string>,
-        IFrom<IEnumerable, string>,
-        IFromNull<string>
+        IFrom<IEnumerable, string>
     {
         public ConvertResult<string> From(IConvertContext context, Type input) =>
             input.GetFriendlyName();
-        public ConvertResult<string> FromNull(IConvertContext context) => default;
-
-        public ConvertResult<string> From(IConvertContext context, DBNull input) => default;
 
         public ConvertResult<string> From(IConvertContext context, IConvertible input)
             => input?.ToString(context.Settings.GetFormatProvider(input.GetType()));

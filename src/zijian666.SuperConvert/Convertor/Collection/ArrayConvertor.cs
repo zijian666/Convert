@@ -9,7 +9,7 @@ using zijian666.SuperConvert.Interface;
 namespace zijian666.SuperConvert.Convertor
 {
 
-    public class ArrayConvertor<T> : BaseConvertor<T[]>, IFrom<string, T[]>, IFrom<object, T[]>
+    public class ArrayConvertor<T> : AllowNullConvertor<T[]>, IFrom<string, T[]>, IFrom<object, T[]>
     {
         public ConvertResult<T[]> From(IConvertContext context, string input)
         {

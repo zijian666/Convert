@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="byte" /> 数组转换器
     /// </summary>
-    public class BytesConvertor : BaseConvertor<byte[]>, IFromConvertible<byte[]>, IFrom<Guid, byte[]>
+    public class BytesConvertor : FromConvertor<byte[]>, IFromConvertible<byte[]>, IFrom<Guid, byte[]>
     {
         public ConvertResult<byte[]> From(IConvertContext context, string input) => input == null ? null : input.Length == 0 ? Array.Empty<byte>() : context.Settings.Encoding.GetBytes(input);
         public ConvertResult<byte[]> From(IConvertContext context, bool input) => BitConverter.GetBytes(input);

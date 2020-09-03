@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor
     /// <summary>
     /// <seealso cref="ushort"/> 转换器
     /// </summary>
-    public class UInt16Convertor : BaseConvertor<ushort>
+    public class UInt16Convertor : FromConvertor<ushort>
                                 , IFromConvertible<ushort>
                                 , IFrom<byte[], ushort>
     {
