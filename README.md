@@ -1,6 +1,6 @@
-# zijian666.Converts
+# Converts
 超级转换器 
-> 重新设计, 老项目已经停止维护 [Converts](https://github.com/blqw/blqw.Converts)
+> 重新设计, 老项目已经停止维护 [Convert3](https://github.com/blqw/blqw.Convert3)
 
 > 对象转换，从未如此简单  
 ```csharp
