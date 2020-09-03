@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -14,7 +15,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert
 {
-    public static class Converts
+    public static partial class Converts
     {
         private static Assembly[] GetAssemblies()
         {
@@ -103,6 +104,78 @@ namespace zijian666.SuperConvert
 
         public static T To<T>(this object value) => Convert<T>(value, null).Value;
 
+        /// <summary>
+        /// 获取一个类型的默认值
+        /// </summary>
+        /// <param name="type"> </param>
+        /// <returns> </returns>
+        public static object GetDefault(this Type type)
+        {
+            if ((type == null)
+                || (type.IsValueType == false) //不是值类型
+                || (Nullable.GetUnderlyingType(type) != null)) //可空值类型
+            {
+                return null;
+            }
+            return type.Instantiable() ? Activator.CreateInstance(type) : null;
+        }
+
+        /// <summary>
+        /// 判断一个对象的值是否为 null 或等效于null的值
+        /// </summary>
+        public static bool IsNull(this object value)
+            => value switch
+            {
+                null => true,
+                DBNull => true,
+                IConvertible x => x.GetTypeCode() == TypeCode.DBNull || x.GetTypeCode() == TypeCode.Empty,
+                _ => value.Equals(null) || value.Equals(DBNull.Value),
+            };
+
+        /// <summary>
+        /// 判断一个对象的值是否为空,包括null,空集合,空字符串
+        /// </summary>
+        public static bool IsEmpty(this object value)
+            => value switch
+            {
+                null => true,
+                DBNull => true,
+                string x => x.Length == 0,
+                Array x => x.Length == 0,
+                ICollection x => x.Count == 0,
+                IEnumerable x => !x.Cast<object>().Any(),
+                IConvertible x => x.GetTypeCode() switch
+                {
+                    TypeCode.DBNull => true,
+                    TypeCode.Empty => true,
+                    _ => false
+                },
+                _ => value.Equals(null) || value.Equals(DBNull.Value),
+            };
+
+        /// <summary>
+        /// 判断一个对象的值是否为连续的空白,包括null,空集合,空字符串,空白字符串,全部为null,空字符串或空白字符串的集合
+        /// </summary>
+        public static bool IsSerialBlank(this object value)
+            => value switch
+            {
+                null => true,
+                DBNull => true,
+                string s => string.IsNullOrWhiteSpace(s),
+                IEnumerable<char> s => s.All(char.IsWhiteSpace),
+                StringBuilder s => s.Length == 0 || string.IsNullOrWhiteSpace(s.ToString()),
+                IEnumerable<string> s => s.All(string.IsNullOrWhiteSpace),
+                IEnumerable<object> s => s.All(x => x == null),
+                IEnumerable s => s.Cast<object>().All(x => x == null),
+                IConvertible s => s.GetTypeCode() switch
+                {
+                    TypeCode.DBNull => true,
+                    TypeCode.Empty => true,
+                    TypeCode.String => string.IsNullOrWhiteSpace(s.ToString(null)),
+                    _ => false
+                },
+                _ => value.Equals(null) || value.Equals(DBNull.Value),
+            };
     }
 
 }
