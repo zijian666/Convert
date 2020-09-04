@@ -1,7 +1,7 @@
 # Converts
 超级转换器 
 > .NET Standard 2.0 重新设计  
-> * 老项目已经停止维护 [Convert3](https://github.com/blqw/blqw.Convert3)*
+> *老项目已经停止维护 [Convert3](https://github.com/blqw/blqw.Convert3)*
 
 # 说明
 > 对象转换，从未如此简单  
