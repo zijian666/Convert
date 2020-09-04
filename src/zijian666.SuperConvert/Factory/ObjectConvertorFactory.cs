@@ -26,20 +26,21 @@ namespace zijian666.SuperConvert.Factory
 
         private bool CanBuild<T>()
         {
-            if (typeof(T).IsMetaType() || typeof(T).IsValueType || typeof(T).IsEnum || typeof(T).IsArray)
+            var type = typeof(T);
+            if (type.IsMetaType() || type.IsValueType || type.IsEnum || type.IsArray || type.Namespace == null)
             {
                 return false;
             }
-            if (typeof(T).Namespace.StartsWith("System."))
+            if (type.Namespace.StartsWith("System."))
             {
                 return false;
             }
-            if (typeof(T).Namespace.StartsWith("Microsoft."))
+            if (type.Namespace.StartsWith("Microsoft."))
             {
                 return false;
             }
 
-            if (typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Length == 0)
+            if (type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Length == 0)
             {
                 return false;
             }

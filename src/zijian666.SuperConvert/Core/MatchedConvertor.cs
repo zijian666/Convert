@@ -48,7 +48,7 @@ namespace zijian666.SuperConvert.Core
             {
                 return 1;
             }
-            var i = Priority.CompareTo(other.Priority);
+            var i = other.Priority.CompareTo(Priority);
             if (i == 0)
             {
                 return MacthedLevel.CompareTo(other.MacthedLevel);

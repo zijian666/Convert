@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
@@ -8,10 +10,45 @@ namespace zijian666.SuperConvert.Convertor
 {
     public class ObjectConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>
     {
+        private readonly Dictionary<Type, Func<object, T>> _casters;
+        public ObjectConvertor()
+        {
+            var binding = BindingFlags.Static | BindingFlags.Public;
+            var methods = OutputType.GetMethods(binding);
+            _casters = new Dictionary<Type, Func<object, T>>();
+            foreach (var method in methods)
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length != 1)
+                {
+                    continue;
+                }
+
+                var parameterType = parameters[0].ParameterType;
+                if (_casters.ContainsKey(parameterType))
+                {
+                    continue;
+                }
+
+                if (method.Name == "op_Explicit" || method.Name == "op_Implicit")
+                {
+                    _casters[parameterType] = o => (T)method.Invoke(null, new object[] { o });
+                }
+            }
+            if (_casters.Count == 0)
+            {
+                _casters = null;
+            }
+
+        }
         public override uint Priority => 0;
 
         public ConvertResult<T> From(IConvertContext context, object input)
         {
+            if (_casters is null && _casters.TryGetValue(input.GetType(), out var caster))
+            {
+                return caster(input);
+            }
             var enumerator = new KeyValueEnumerator<string, object>(context, input);
             if (!enumerator.HasStringKey)
             {

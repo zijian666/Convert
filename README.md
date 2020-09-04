@@ -39,7 +39,52 @@ Dictionary<Guid, Dictionary<int, User>>
     .To<Dictionary<string, Dictionary<DateTime, NameValueCollection>>>(); //不能理解就算了
 ```
 ## 扩展自定义转换器
-待完善
+```csharp
+public class MyClass
+{
+    public int ID { get; set; }
+}
+
+public class MyConvertor : AllowNullConvertor<MyClass>, IFrom<int, MyClass>
+{
+    public ConvertResult<MyClass> From(IConvertContext context, int input)
+    {
+        return new MyClass() { ID = input };
+    }
+}
+```
+
+## 智能识别自定义转换方法
+```csharp
+[TestMethod]
+public void 自定义强转()
+{
+    var i = 11;
+    var my = i.To<MyClass>();
+    Assert.AreEqual(i, my.ID);
+}
+
+public class MyClass
+{
+    public int ID { get; set; }
+    public static explicit operator MyClass(int i) => new MyClass() { ID = i };
+}
+```
+```csharp
+[TestMethod]
+public void 自定义隐转()
+{
+    var i = 11;
+    var my = i.To<MyClass2>();
+    Assert.AreEqual(i, my.ID);
+}
+
+public class MyClass2
+{
+    public int ID { get; set; }
+    public static implicit operator MyClass2(int i) => new MyClass2() { ID = i };
+}
+```
 
 ## 其他功能
 ```csharp

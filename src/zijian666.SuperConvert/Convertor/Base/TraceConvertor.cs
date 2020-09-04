@@ -8,6 +8,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor.Base
 {
+    [DebuggerDisplay("{" + nameof(GetDebuggerDisplay) + "(),nq}")]
     internal class TraceConvertor<T> : ConvertorWrapper<T>, IConvertor<T>
     {
         private IConvertContext _context = new InnerConvertContext();
@@ -80,6 +81,11 @@ namespace zijian666.SuperConvert.Convertor.Base
             public System.StringSplitOptions StringSplitOptions => Converts.Settings.StringSplitOptions;
 
             public Dictionary<System.Type, string> FormatStrings => Converts.Settings.FormatStrings;
+        }
+
+        private string GetDebuggerDisplay()
+        {
+            return $"Trace({InnerConvertor.GetType().GetFriendlyName()},out={typeof(T).GetFriendlyName()})";
         }
     }
 }

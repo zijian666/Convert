@@ -32,9 +32,10 @@ namespace zijian666.SuperConvert.Core
                 .SelectMany(x => x.Create<T>())
                 .Where(x => x != null)
                 .OrderBy(x => x)
-                .Select(x => new TraceConvertor<T>(x.Convertor));
+                .Select(x => new TraceConvertor<T>(x.Convertor))
+                .ToList();
 
-            return (convs.Count()) switch
+            return (convs.Count) switch
             {
                 0 => new TraceConvertor<T>(new NotFoundConvertor<T>()),
                 1 => convs.FirstOrDefault(),

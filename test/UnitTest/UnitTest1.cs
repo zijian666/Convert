@@ -619,7 +619,7 @@ namespace UnitTest
             Assert.AreEqual(1, user2.ID);
             Assert.AreEqual("blqw", user2.Name);
 
-            dynamic user3 = user1.Convert(new { ID = 1, Name = "blqw" }.GetType());
+            dynamic user3 = user1.Convert(new { ID = 1, Name = "blqw" }.GetType()).Value;
             Assert.AreEqual(1, user3.ID);
             Assert.AreEqual("blqw", user3.Name);
 

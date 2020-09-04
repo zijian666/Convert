@@ -210,7 +210,12 @@ namespace zijian666.SuperConvert.Core
                     _type = InputType.Enumerator;
                     break;
                 default:
-                    if (typeof(TValue) == typeof(object))
+                    if (input is TValue value && typeof(TValue) != typeof(object))
+                    {
+                        _single = value;
+                        _type = InputType.Single;
+                    }
+                    else
                     {
                         var inputType = input.GetType();
                         if (inputType.IsMetaType())
@@ -218,22 +223,17 @@ namespace zijian666.SuperConvert.Core
                             _single = (TValue)input;
                             _type = InputType.Single;
                         }
-                        else
+                        else if (typeof(TValue) == typeof(object))
                         {
                             HasStringKey = true;
                             _object = input;
                             _properties = PropertyHelper.GetByType(inputType);
                             _type = InputType.Object;
                         }
-                    }
-                    else if (input is TValue value)
-                    {
-                        _single = value;
-                        _type = InputType.Single;
-                    }
-                    else
-                    {
-                        IsEmpty = true;
+                        else
+                        {
+                            IsEmpty = true;
+                        }
                     }
                     break;
             }
