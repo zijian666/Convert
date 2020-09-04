@@ -41,6 +41,14 @@ Dictionary<Guid, Dictionary<int, User>>
 ```
 ## 扩展自定义转换器
 ```csharp
+[TestMethod]
+public void 自定义转换器()
+{
+    var i = 11;
+    var my = i.To<MyClass>();
+    Assert.AreEqual(i, my.ID);
+}
+
 public class MyClass
 {
     public int ID { get; set; }
