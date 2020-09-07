@@ -45,7 +45,7 @@ namespace zijian666.SuperConvert.Convertor
 
         public ConvertResult<T> From(IConvertContext context, object input)
         {
-            if (_casters is null && _casters.TryGetValue(input.GetType(), out var caster))
+            if (_casters is not null && _casters.TryGetValue(input.GetType(), out var caster))
             {
                 return caster(input);
             }
@@ -54,7 +54,7 @@ namespace zijian666.SuperConvert.Convertor
             {
                 return context.ConvertFail(this, input);
             }
-            var obj = Activator.CreateInstance<T>();
+            var obj = context.Settings.CreateInstance<T>();
             var properties = PropertyHelper.GetByType(OutputType);
             var c1 = 0;
             var c2 = 0;
@@ -80,7 +80,8 @@ namespace zijian666.SuperConvert.Convertor
                     return new InvalidCastException(message, value.Exception);
                 }
                 c2++;
-                prop.SetValue(obj, value.Value);
+                var setter = context.Settings.ReflectCompiler?.CompileSetter<object>(prop.Property);
+                (setter ?? prop.SetValue)(obj, value.Value);
             }
             if (c1 > 0 && c2 == 0)
             {

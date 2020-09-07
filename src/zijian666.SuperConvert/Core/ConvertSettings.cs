@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using zijian666.Core.Abstractions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
 {
-    public class ConvertSettings : IConvertSettings
+    public class ConvertSettings : IConvertSettings, ISlot<IStringSerializer>, ISlot<IReflectCompiler>
     {
         private readonly ConvertorBuilder _builder;
         private readonly ConcurrentDictionary<Type, object> _convertors;
@@ -83,8 +84,13 @@ namespace zijian666.SuperConvert.Core
 
         public StringSplitOptions StringSplitOptions { get; set; }
 
-        Dictionary<Type, IFormatProvider> IConvertSettings.FormatProviders => _formatProviders;
-        IEnumerable<ITranslator> IConvertSettings.Translators => _translators;
+        public IReflectCompiler ReflectCompiler { get; set; }
 
+        void ISlot<IStringSerializer>.Set(IStringSerializer feature) => StringSerializer = feature;
+
+        void ISlot<IReflectCompiler>.Set(IReflectCompiler feature)
+            => ReflectCompiler = CachedReflectCompiler.Build(feature);
+
+        IEnumerable<ITranslator> IConvertSettings.Translators => Translators;
     }
 }

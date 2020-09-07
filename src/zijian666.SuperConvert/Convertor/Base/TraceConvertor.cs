@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using zijian666.Core.Abstractions;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
@@ -32,7 +34,11 @@ namespace zijian666.SuperConvert.Convertor.Base
                 trace.IndentLevel--;
             }
             var ex = result.Exception;
-            if (ex is not null)
+            if (ex is null)
+            {
+                trace?.WriteLine("返回:" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
+            }
+            else
             {
                 trace?.WriteLine("输入值： " + (input ?? "{null}"));
                 trace?.WriteLine("输出类型： " + typeof(T).GetFriendlyName());
@@ -40,10 +46,6 @@ namespace zijian666.SuperConvert.Convertor.Base
                 ex.Data.Add("Convert", InnerConvertor);
                 ex.Data.Add("InputValue", input);
                 ex.Data.Add("OutputType", typeof(T));
-            }
-            else
-            {
-                trace?.WriteLine("返回:" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
             }
 
             trace?.WriteLine("");
@@ -74,13 +76,15 @@ namespace zijian666.SuperConvert.Convertor.Base
 
             public IConvertor<T1> GetConvertor<T1>(IConvertContext context) => Converts.Settings.GetConvertor<T1>(context);
 
-            public Dictionary<System.Type, System.IFormatProvider> FormatProviders => Converts.Settings.FormatProviders;
+            public Dictionary<Type, IFormatProvider> FormatProviders => Converts.Settings.FormatProviders;
 
             public StringSeparator StringSeparator => Converts.Settings.StringSeparator;
 
-            public System.StringSplitOptions StringSplitOptions => Converts.Settings.StringSplitOptions;
+            public StringSplitOptions StringSplitOptions => Converts.Settings.StringSplitOptions;
 
-            public Dictionary<System.Type, string> FormatStrings => Converts.Settings.FormatStrings;
+            public Dictionary<Type, string> FormatStrings => Converts.Settings.FormatStrings;
+
+            public IReflectCompiler ReflectCompiler => Converts.Settings.ReflectCompiler;
         }
 
         private string GetDebuggerDisplay()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using zijian666.Core.Abstractions;
 
 namespace zijian666.SuperConvert.Core
 {
@@ -35,11 +36,11 @@ namespace zijian666.SuperConvert.Core
         /// <summary>
         /// 属性的Get方法委托
         /// </summary>
-        public Func<object, object> GetValue { get; }
+        public MemberGetter<object> GetValue { get; }
         /// <summary>
         /// 属性的Set方法委托
         /// </summary>
-        public Action<object, object> SetValue { get; }
+        public MemberSetter<object> SetValue { get; }
         /// <summary>
         /// 属性
         /// </summary>

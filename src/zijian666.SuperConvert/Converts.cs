@@ -7,7 +7,9 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Runtime.Serialization;
 using System.Text;
+using zijian666.Core.Abstractions;
 using zijian666.SuperConvert.Core;
 using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Factory;
@@ -37,9 +39,7 @@ namespace zijian666.SuperConvert
             return assemblies.ToArray();
         }
 
-        static ConvertSettings _settings;
-
-        public static ConvertSettings Settings => _settings;
+        public static ConvertSettings Settings { get; }
 
         static Converts()
         {
@@ -75,7 +75,7 @@ namespace zijian666.SuperConvert
                 }
             }
             var builder = new ConvertorBuilder(factories.ToArray());
-            _settings = new ConvertSettings(builder)
+            Settings = new ConvertSettings(builder)
             {
                 Trace = new TextWriterTraceListener(Console.Out),
                 StringSeparator = ",",
@@ -84,19 +84,19 @@ namespace zijian666.SuperConvert
                 NumberFormatInfo = NumberFormatInfo.CurrentInfo,
                 StringSplitOptions = StringSplitOptions.RemoveEmptyEntries,
             };
-            _settings.Translators.AddRange(translators);
+            Settings.Translators.AddRange(translators);
         }
 
 
         public static ConvertResult<T> Convert<T>(this object value, IConvertSettings settings = null)
         {
-            using IConvertContext context = new ConvertContext(settings.Combin(_settings));
+            using IConvertContext context = new ConvertContext(settings.Combin(Settings));
             return context.Convert<T>(value);
         }
 
         public static ConvertResult<object> Convert(this object value, Type type, IConvertSettings settings = null)
         {
-            using IConvertContext context = new ConvertContext(settings.Combin(_settings));
+            using IConvertContext context = new ConvertContext(settings.Combin(Settings));
             return context.Convert(type, value);
         }
 
@@ -176,6 +176,18 @@ namespace zijian666.SuperConvert
                 },
                 _ => value.Equals(null) || value.Equals(DBNull.Value),
             };
+
+
+        public static void SetStringSerializer(IStringSerializer serializer)
+            => ((ISlot<IStringSerializer>)Settings)?.Set(serializer);
+
+        public static void SetReflectCompiler(IReflectCompiler compiler)
+            => ((ISlot<IReflectCompiler>)Settings)?.Set(compiler);
+
+        public static IFormatterConverter GetFormatterConverter() => FormatterConverter.Instance;
+
+        public static void SetFormatterConverter(this ISlot<IFormatterConverter> slot)
+            => slot.Set(FormatterConverter.Instance);
     }
 
 }

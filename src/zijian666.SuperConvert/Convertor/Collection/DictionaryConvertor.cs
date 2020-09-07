@@ -13,8 +13,10 @@ namespace zijian666.SuperConvert.Convertor
         public ConvertResult<TDictionary> From(IConvertContext context, object input)
         {
             var enumerator = new KeyValueEnumerator<TKey, TValue>(context, input);
-            var dict = (TDictionary)Activator.CreateInstance(
-                typeof(TDictionary).IsInterface ? typeof(Dictionary<TKey, TValue>) : typeof(TDictionary));
+            var dict = OutputType.IsInterface
+                ? (TDictionary)context.Settings.CreateInstance(typeof(Dictionary<TKey, TValue>))
+                : context.Settings.CreateInstance<TDictionary>();
+
             var rs = context.Settings.GetResourceStrings();
             while (enumerator.MoveNext())
             {

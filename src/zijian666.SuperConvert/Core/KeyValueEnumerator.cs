@@ -341,10 +341,17 @@ namespace zijian666.SuperConvert.Core
             InputType.NameValueCollection => _nameValueCollection[_index],
             InputType.Dictionary => _dictionary[_keyEnumerator.Current],
             InputType.DictionaryT => _dictionaryT[_keyEnumeratorT.Current],
-            InputType.Object => _properties[_index].GetValue(_object),
+            InputType.Object => ObjectGetter(),
             InputType.Single => _single,
             _ => throw new NotImplementedException(),
         };
+
+        private object ObjectGetter()
+        {
+            var p = _properties[_index];
+            var getter = _context.Settings.ReflectCompiler?.CompileGetter<object>(p.Property);
+            return (getter ?? p.Property.GetValue)(_object);
+        }
 
         public bool IsEmpty { get; }
         public bool HasStringKey { get; }

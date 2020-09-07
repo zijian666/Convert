@@ -17,7 +17,7 @@ namespace zijian666.SuperConvert.Convertor
             {
                 return context.ConvertFail(this, input);
             }
-            var collection = Activator.CreateInstance<T>();
+            var collection = context.Settings.CreateInstance<T>();
             var rs = context.Settings.GetResourceStrings();
             while (enumerator.MoveNext())
             {

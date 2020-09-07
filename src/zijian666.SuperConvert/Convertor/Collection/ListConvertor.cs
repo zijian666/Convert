@@ -14,12 +14,12 @@ namespace zijian666.SuperConvert.Convertor
         {
             if (input is null)
             {
-                return typeof(TList).IsValueType ? context.ConvertFail(this, input) : Ok(default);
+                return OutputType.IsValueType ? context.ConvertFail(this, input) : Ok(default);
             }
 
             if (string.IsNullOrEmpty(input))
             {
-                return (TList)Activator.CreateInstance(typeof(TList)); ;
+                return context.Settings.CreateInstance<TList>();
             }
 
             var arr = input.Split(context.Settings.StringSeparator, context.Settings.StringSplitOptions);
@@ -29,6 +29,10 @@ namespace zijian666.SuperConvert.Convertor
             }
             return From(context, arr.GetEnumerator());
         }
+
+        private TList CreateInstance(IConvertContext context) => OutputType.IsInterface
+                ? (TList)context.Settings.CreateInstance(typeof(List<TValue>))
+                : Activator.CreateInstance<TList>();
 
         public ConvertResult<TList> From(IConvertContext context, object input)
         {
@@ -44,14 +48,14 @@ namespace zijian666.SuperConvert.Convertor
                 var result = context.Convert<TValue>(input);
                 if (result.Success)
                 {
-                    var list1 = (TList)Activator.CreateInstance(typeof(TList).IsInterface ? typeof(List<TValue>) : typeof(TList));
+                    var list1 = CreateInstance(context);
                     list1.Add(result.Value);
                     return list1;
                 }
                 return context.ConvertFail(this, input);
             }
 
-            var list = (TList)Activator.CreateInstance(typeof(TList).IsInterface ? typeof(List<TValue>) : typeof(TList));
+            var list = CreateInstance(context);
             while (enumerator.MoveNext())
             {
                 var result = enumerator.GetValue();

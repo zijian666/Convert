@@ -67,5 +67,37 @@ namespace zijian666.SuperConvert.Extensions
 
         public static ResourceStrings GetResourceStrings(this IConvertSettings settings)
             => ResourceStringManager.GetResource(settings?.CultureInfo);
+
+        public static T CreateInstance<T>(this IConvertSettings settings)
+        {
+            var compiler = settings?.ReflectCompiler;
+            if (compiler == null)
+            {
+                return Activator.CreateInstance<T>();
+            }
+            var constructor = typeof(T).GetConstructor(Type.EmptyTypes);
+            if (constructor == null)
+            {
+                return Activator.CreateInstance<T>();
+            }
+            var creator = compiler.CompileCreator<T>(constructor);
+            return creator();
+        }
+
+        public static object CreateInstance(this IConvertSettings settings, Type type)
+        {
+            var compiler = settings?.ReflectCompiler;
+            if (compiler == null)
+            {
+                return Activator.CreateInstance(type);
+            }
+            var constructor = type.GetConstructor(Type.EmptyTypes);
+            if (constructor == null)
+            {
+                return Activator.CreateInstance(type);
+            }
+            var creator = compiler.CompileCreator<object>(constructor);
+            return creator();
+        }
     }
 }

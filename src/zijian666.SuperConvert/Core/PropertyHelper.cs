@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace zijian666.SuperConvert.Core
 {
@@ -10,12 +9,6 @@ namespace zijian666.SuperConvert.Core
     /// </summary>
     public static class PropertyHelper
     {
-        /// <summary>
-        /// 属性缓存
-        /// </summary>
-        private static readonly ConcurrentDictionary<PropertyInfo, PropertyHandler> _propertyCache =
-            new ConcurrentDictionary<PropertyInfo, PropertyHandler>();
-
         /// <summary>
         /// 类型缓存
         /// </summary>
@@ -46,18 +39,10 @@ namespace zijian666.SuperConvert.Core
             var result = new List<PropertyHandler>(length);
             for (var i = 0; i < length; i++)
             {
-                var handler = GetPropertyHandler(ps[i]);
-                result.Add(handler);
+                result.Add(PropertyHandler.Create(ps[i]));
             }
             return new PropertiesCollection(result);
         }
 
-        /// <summary>
-        /// 根据属性值获取属性操作对象
-        /// </summary>
-        /// <param name="property"> 属性 </param>
-        /// <returns></returns>
-        internal static PropertyHandler GetPropertyHandler(this PropertyInfo property) =>
-            property == null ? null : _propertyCache.GetOrAdd(property, PropertyHandler.Create);
     }
 }

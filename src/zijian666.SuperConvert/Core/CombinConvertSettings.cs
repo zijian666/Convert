@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using zijian666.Core.Abstractions;
 using zijian666.SuperConvert.Convertor.Base;
-using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
@@ -74,5 +74,7 @@ namespace zijian666.SuperConvert.Core
 
         public Dictionary<Type, string> FormatStrings
             => _settings1?.FormatStrings ?? _settings2?.FormatStrings;
+
+        public IReflectCompiler ReflectCompiler => _settings1?.ReflectCompiler ?? _settings2.ReflectCompiler;
     }
 }

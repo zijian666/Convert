@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using zijian666.Core.Abstractions;
 using zijian666.SuperConvert.Core;
 
 namespace zijian666.SuperConvert.Interface
@@ -15,6 +16,7 @@ namespace zijian666.SuperConvert.Interface
         IEnumerable<ITranslator> Translators { get; }
 
         IStringSerializer StringSerializer { get; }
+        IReflectCompiler ReflectCompiler { get; }
 
         CultureInfo CultureInfo { get; }
 
