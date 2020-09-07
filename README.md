@@ -135,4 +135,8 @@ fa91eefc-e903-dbcf-394b-0b757987357b : True
 
 
 ## 更新说明 
-* 重新设计, 敬请期待
+# [4.0.0.1-beta]2020.09.07
++ 依赖核心包 zijian666.Core.Abstractions
+
+# [4.0.0-beta]2020.09.06
+* 升级到standard2.0

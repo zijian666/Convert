@@ -23,12 +23,12 @@ namespace zijian666.SuperConvert
         {
             var assemblies = new List<Assembly>();
             var dependencies = DependencyContext.Default.CompileLibraries;
-            var libs = dependencies.Where(lib => !lib.Serviceable && lib.Type != "package");
-            foreach (var library in libs)
+            var loadContext = AssemblyLoadContext.Default;
+            foreach (var library in dependencies)
             {
                 try
                 {
-                    var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(library.Name));
+                    var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(library.Name));
                     assemblies.Add(assembly);
                 }
                 catch

@@ -25,7 +25,7 @@ namespace zijian666.SuperConvert.Convertor.Base
             var trace = context.Settings.Trace;
             if (trace != null)
             {
-                trace.WriteLine("调用： " + InnerConvertor.ToString());
+                trace.WriteLine("调用：" + InnerConvertor.ToString());
                 trace.IndentLevel++;
             }
             var result = InnerConvertor.Convert(context, input);
@@ -36,13 +36,13 @@ namespace zijian666.SuperConvert.Convertor.Base
             var ex = result.Exception;
             if (ex is null)
             {
-                trace?.WriteLine("返回:" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
+                trace?.WriteLine("返回：" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
             }
             else
             {
-                trace?.WriteLine("输入值： " + (input ?? "{null}"));
-                trace?.WriteLine("输出类型： " + typeof(T).GetFriendlyName());
-                trace?.WriteLine("异常： " + ex.ToString());
+                trace?.WriteLine("输入值：" + (input ?? "{null}"));
+                trace?.WriteLine("输出类型：" + typeof(T).GetFriendlyName());
+                trace?.WriteLine("异常：" + ex.ToString());
                 ex.Data.Add("Convert", InnerConvertor);
                 ex.Data.Add("InputValue", input);
                 ex.Data.Add("OutputType", typeof(T));

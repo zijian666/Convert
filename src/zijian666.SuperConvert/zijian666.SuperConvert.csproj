@@ -12,12 +12,17 @@
     <PackageTags>.net core,c#,csharp,convert,cast,convertion,zijian,zijian666</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>4.0.0.0-beta</Version>
+    <Version>4.0.0.3-beta</Version>
     <Authors>zijian</Authors>
     <Product>zijian</Product>
     <Description>可以实现任意类型之间的转换</Description>
-    <PackageReleaseNotes># [4.0.0-beta]2020.09.06
-升级到standard2.2</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      # [4.0.0.3-beta]2020.09.07
+      + 依赖核心包
+
+      # [4.0.0-beta]2020.09.06
+      * 升级到standard2.0
+    </PackageReleaseNotes>
     <Copyright>Copyright © 2020 - 2021 zijian</Copyright>
   </PropertyGroup>
 
