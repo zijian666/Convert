@@ -135,8 +135,12 @@ fa91eefc-e903-dbcf-394b-0b757987357b : True
 
 
 ## 更新说明 
-# [4.0.0.1-beta]2020.09.07
-+ 依赖核心包 zijian666.Core.Abstractions
+### [4.0.0.4-beta]2020.09.09
++ 动态加载Json支持组件(nuget安装zijian666.SuperConvert.Json)
+* 优化部分数据转换逻辑
 
-# [4.0.0-beta]2020.09.06
+### [4.0.0.3-beta]2020.09.07
++ 依赖核心包
+
+### [4.0.0-beta]2020.09.06
 * 升级到standard2.0
