@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
@@ -8,8 +9,19 @@ using zijian666.SuperConvert.Interface;
 namespace zijian666.SuperConvert.Convertor
 {
     public class AnonymousTypeConvertor<T> :
-        AllowNullConvertor<T>, IFrom<object, T>
+        AllowNullConvertor<T>, IFrom<object, T>, IFrom<string, T>
     {
+
+        public ConvertResult<T> From(IConvertContext context, string input)
+        {
+            var dict = context.Settings.StringSerializer?.ToObject(input, typeof(Dictionary<string, object>));
+            if (dict == null)
+            {
+                return null;
+            }
+            return From(context, dict);
+        }
+
         public ConvertResult<T> From(IConvertContext context, object input)
         {
             var enumerator = new KeyValueEnumerator<string, object>(context, input);
@@ -55,5 +67,6 @@ namespace zijian666.SuperConvert.Convertor
 
             return (T)constructor.Invoke(arguments);
         }
+
     }
 }

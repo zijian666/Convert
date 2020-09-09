@@ -16,6 +16,7 @@ namespace zijian666.SuperConvert.Core
         private Dictionary<Type, string> _formatStrings;
         private Dictionary<Type, IFormatProvider> _formatProviders;
         private List<ITranslator> _translators;
+        private IStringSerializer _stringSerializer;
 
         public ConvertSettings(ConvertorBuilder builder)
         {
@@ -71,7 +72,8 @@ namespace zijian666.SuperConvert.Core
             }
         }
 
-        public IStringSerializer StringSerializer { get; set; }
+        public IStringSerializer StringSerializer
+            => _stringSerializer ?? Converts.StringSerializers[Protocol] ?? Converts.StringSerializers.Default;
 
         public CultureInfo CultureInfo { get; set; }
 
@@ -86,11 +88,15 @@ namespace zijian666.SuperConvert.Core
 
         public IReflectCompiler ReflectCompiler { get; set; }
 
-        void ISlot<IStringSerializer>.Set(IStringSerializer feature) => StringSerializer = feature;
+        void ISlot<IStringSerializer>.Set(IStringSerializer feature)
+            => _stringSerializer = feature;
 
         void ISlot<IReflectCompiler>.Set(IReflectCompiler feature)
             => ReflectCompiler = CachedReflectCompiler.Build(feature);
 
-        IEnumerable<ITranslator> IConvertSettings.Translators => Translators;
+        IEnumerable<ITranslator> IConvertSettings.Translators
+            => Translators;
+
+        public string Protocol { get; set; } = StringSerializerCollection.DefaultProtocol;
     }
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
@@ -22,6 +23,18 @@ namespace zijian666.SuperConvert
         private static Assembly[] GetAssemblies()
         {
             var assemblies = new List<Assembly>();
+            var keys = new HashSet<string>();
+            var names = DependencyContext.Default.RuntimeLibraries
+                .SelectMany(x => x.Dependencies)
+                .Select(x => x.Name)
+                .OrderBy(x => x)
+                .ToList();
+            var list = AppDomain.CurrentDomain.GetAssemblies()
+                .Select(x => x.FullName)
+                .OrderBy(x => x)
+                .ToList();
+
+
             var dependencies = DependencyContext.Default.CompileLibraries;
             var loadContext = AssemblyLoadContext.Default;
             foreach (var library in dependencies)
@@ -29,6 +42,12 @@ namespace zijian666.SuperConvert
                 try
                 {
                     var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(library.Name));
+                    if (keys.Contains(assembly.Location) || keys.Contains(assembly.FullName))
+                    {
+                        continue;
+                    }
+                    keys.Add(assembly.Location);
+                    keys.Add(assembly.FullName);
                     assemblies.Add(assembly);
                 }
                 catch
@@ -36,18 +55,68 @@ namespace zijian666.SuperConvert
                     //
                 }
             }
+
+            var zijian = new[]
+            {
+                "zijian666.SuperConvert.Json",
+                "zijian666.Core.Abstractions"
+            };
+            foreach (var item in zijian)
+            {
+                try
+                {
+                    var assembly = loadContext.LoadFromAssemblyName(new AssemblyName(item));
+                    if (keys.Contains(assembly.Location) || keys.Contains(assembly.FullName))
+                    {
+                        continue;
+                    }
+                    keys.Add(assembly.Location);
+                    keys.Add(assembly.FullName);
+                    assemblies.Add(assembly);
+                }
+                catch
+                {
+                    //
+                }
+            }
+
+            var files = Directory.GetFiles(AppContext.BaseDirectory);
+            foreach (var file in files)
+            {
+                if (keys.Contains(file))
+                {
+                    continue;
+                }
+                try
+                {
+                    var assembly = loadContext.LoadFromAssemblyPath(file);
+                    if (!keys.Contains(assembly.FullName))
+                    {
+                        assemblies.Add(assembly);
+                    }
+                }
+                catch
+                {
+                    //
+                }
+            }
+
             return assemblies.ToArray();
         }
 
         public static ConvertSettings Settings { get; }
+
+        public static StringSerializerCollection StringSerializers { get; }
 
         static Converts()
         {
             var assemblies = GetAssemblies();
             var factories = new List<IConvertorFactory>();
             var translators = new List<ITranslator>();
+            var serializers = new StringSerializerCollection();
             var types = assemblies.SelectMany(x => x.SafeGetTypes())
                 .Where(x => !x.Name.StartsWith("<") && x.Instantiable() && x.GetConstructor(Type.EmptyTypes) != null);
+
             foreach (var type in types)
             {
                 if (typeof(IConvertorFactory).IsAssignableFrom(type))
@@ -57,14 +126,21 @@ namespace zijian666.SuperConvert
                         factories.Add((IConvertorFactory)Activator.CreateInstance(type));
                     }
                 }
-                else if (typeof(ITranslator).IsAssignableFrom(type))
+                if (typeof(ITranslator).IsAssignableFrom(type))
                 {
                     if (type.Instantiable() && type.GetConstructor(Type.EmptyTypes) != null)
                     {
                         translators.Add((ITranslator)Activator.CreateInstance(type));
                     }
                 }
-                else
+                if (typeof(IStringSerializer).IsAssignableFrom(type))
+                {
+                    if (type.Instantiable() && type.GetConstructor(Type.EmptyTypes) != null)
+                    {
+                        serializers.Register((IStringSerializer)Activator.CreateInstance(type));
+                    }
+                }
+
                 {
                     var t = type.GetGenericArguments(typeof(IConvertor<>));
                     if (t != null && t.Length == 1)
@@ -85,6 +161,7 @@ namespace zijian666.SuperConvert
                 StringSplitOptions = StringSplitOptions.RemoveEmptyEntries,
             };
             Settings.Translators.AddRange(translators);
+            StringSerializers = serializers;
         }
 
 

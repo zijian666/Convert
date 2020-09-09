@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor.Base
@@ -126,6 +127,10 @@ namespace zijian666.SuperConvert.Convertor.Base
             //字符串类型的序列化器
             if (input is string str)
             {
+                if (OutputType.IsMetaType())
+                {
+                    return ConvertResult<T>.NULL;
+                }
                 var serializer = context.Settings.StringSerializer;
                 if (serializer != null)
                 {
@@ -139,8 +144,16 @@ namespace zijian666.SuperConvert.Convertor.Base
                     }
                 }
             }
-            else if (typeof(T) == typeof(string))
+            else if (OutputType == typeof(string))
             {
+                if (input is null || input is DBNull)
+                {
+                    return default;
+                }
+                if (input.GetType().IsMetaType())
+                {
+                    return ConvertResult<T>.NULL;
+                }
                 var serializer = context.Settings.StringSerializer;
                 if (serializer != null)
                 {

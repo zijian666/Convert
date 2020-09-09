@@ -9,20 +9,22 @@
     <PackageProjectUrl>https://github.com/zijian666/SuperConvert</PackageProjectUrl>
     <RepositoryUrl>https://github.com/zijian666/SuperConvert</RepositoryUrl>
     <RepositoryType>C#</RepositoryType>
-    <PackageTags>.net core,c#,csharp,convert,cast,convertion,zijian,zijian666</PackageTags>
+    <PackageTags>.net core,c#,csharp,convert,cast,convertion,zijian,zijian666,parse</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>4.0.0.3-beta</Version>
+    <Version>4.0.0.4-beta</Version>
     <Authors>zijian</Authors>
-    <Product>zijian</Product>
     <Description>可以实现任意类型之间的转换</Description>
     <PackageReleaseNotes>
+      # [4.0.0.4-beta]2020.09.09      + 动态加载Json支持组件(nuget安装zijian666.SuperConvert.Json)
+      * 优化部分数据转换逻辑
+
       # [4.0.0.3-beta]2020.09.07
       + 依赖核心包
 
       # [4.0.0-beta]2020.09.06
       * 升级到standard2.0
-    </PackageReleaseNotes>
+</PackageReleaseNotes>
     <Copyright>Copyright © 2020 - 2021 zijian</Copyright>
   </PropertyGroup>
 

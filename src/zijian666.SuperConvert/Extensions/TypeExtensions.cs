@@ -298,7 +298,8 @@ namespace zijian666.SuperConvert.Extensions
                 || type == typeof(Guid)
                 || type == typeof(TimeSpan)
                 || type == typeof(decimal)
-                || type == typeof(DBNull);
+                || type == typeof(DBNull)
+                || IsMetaType(Nullable.GetUnderlyingType(type));
         }
     }
 }

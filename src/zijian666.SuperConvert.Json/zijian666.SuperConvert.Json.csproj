@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.0.0</Version>
+    <Authors>zijian</Authors>
+    <Description>SuperConvert 超级转换器 Json支持</Description>
+    <Copyright>Copyright © 2020 - 2021 zijian</Copyright>
+    <PackageProjectUrl>https://github.com/zijian666/SuperConvert</PackageProjectUrl>
+    <PackageIcon>icon.jpg</PackageIcon>
+    <RepositoryUrl>https://github.com/zijian666/SuperConvert</RepositoryUrl>
+    <RepositoryType>C#</RepositoryType>
+    <PackageTags>.net core,c#,csharp,convert,,zijian,zijian666,json</PackageTags>
+    <PackageReleaseNotes># [1.0.0.0]2020.09.09
+支持JSON格式数据的转换</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="zijian666.SuperConvert" Version="4.0.0.3-beta" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\icon.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
