@@ -350,7 +350,7 @@ namespace zijian666.SuperConvert.Core
         {
             var p = _properties[_index];
             var getter = _context.Settings.ReflectCompiler?.CompileGetter<object>(p.Property);
-            return (getter ?? p.Property.GetValue)(_object);
+            return (getter ?? p.GetValue)(_object);
         }
 
         public bool IsEmpty { get; }

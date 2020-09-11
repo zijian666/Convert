@@ -5,6 +5,8 @@ using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
+using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Interface;
 //using System.Runtime.Remoting;
 
 namespace zijian666.SuperConvert.Dynamic
@@ -12,13 +14,13 @@ namespace zijian666.SuperConvert.Dynamic
     /// <summary>
     /// 基于系统原始类型的动态类型
     /// </summary>
-    public class DynamicPrimitive : DynamicObject, IEquatable<object>, IComparable,
+    internal class DynamicPrimitive : DynamicObjectBase<object>, IEquatable<object>, IComparable,
         IComparable<object>, IObjectReference, IConvertible, IFormattable
     {
         /// <summary>
         /// 表示一个null的动态类型
         /// </summary>
-        public static readonly DynamicPrimitive Null = new DynamicPrimitive(null);
+        public static readonly DynamicPrimitive Null = new DynamicPrimitive(null, Converts.Settings);
 
         /// <summary>
         /// 表示一个空的字符串数组
@@ -26,15 +28,14 @@ namespace zijian666.SuperConvert.Dynamic
         private static readonly string[] _emptyStrings = new string[0];
 
         /// <summary>
-        /// 被包装的原始值
-        /// </summary>
-        private readonly object _value;
-
-        /// <summary>
         /// 使用指定对象初始化实例
         /// </summary>
         /// <param name="value"> </param>
-        public DynamicPrimitive(object value) => _value = value;
+
+        public DynamicPrimitive(object value, IConvertSettings convertSettings)
+            : base(value, convertSettings)
+        {
+        }
 
         /// <summary>
         /// 将当前实例与同一类型的另一个对象进行比较，并返回一个整数，该整数指示当前实例在排序顺序中的位置是位于另一个对象之前、之后还是与其位置相同。
@@ -56,33 +57,33 @@ namespace zijian666.SuperConvert.Dynamic
         {
             if (obj == null)
             {
-                return _value == null;
+                return Value == null;
             }
             if (ReferenceEquals(this, obj)) //相同实例
             {
                 return true;
             }
             obj = (obj as IObjectReference)?.GetRealObject(new StreamingContext()) ?? obj; //获取被包装的类型
-            if (Equals(_value, obj))
+            if (Equals(Value, obj))
             {
                 return true;
             }
-            var result = _value.Convert(obj.GetType(), null); //尝试类型转换后比较
-            return result.Success && Equals(result.OutputValue, obj);
+            var result = Value.Convert(obj.GetType(), null); //尝试类型转换后比较
+            return result.Success && Equals(result.Value, obj);
         }
 
         /// <summary>
         /// 打开该对象。
         /// </summary>
         /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _value;
+        public virtual object Unwrap() => Value;
 
         /// <summary>
         /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
         /// </summary>
         /// <returns> 返回放入图形中的实际对象。 </returns>
         /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _value;
+        public virtual object GetRealObject(StreamingContext context) => Value;
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。
@@ -94,7 +95,7 @@ namespace zijian666.SuperConvert.Dynamic
         /// 尝试转换类型
         /// </summary>
         public override bool TryConvert(ConvertBinder binder, out object result)
-            => TryChangeType(_value, binder.ReturnType, out result);
+            => TryChangeType(Value, binder.ReturnType, out result);
 
         /// <summary>
         /// 尝试获取类型的成员对象
@@ -102,13 +103,13 @@ namespace zijian666.SuperConvert.Dynamic
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var p = _value?.GetType().GetProperty(binder.Name, flags);
+            var p = Value?.GetType().GetProperty(binder.Name, flags);
             if ((p == null) || (p.GetIndexParameters().Length > 0))
             {
                 result = Null;
                 return true;
             }
-            result = DynamicFactory.Create(p.GetValue(_value));
+            result = WrapToDynamic(p.GetValue(Value));
             return true;
         }
 
@@ -117,17 +118,17 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            if (_value == null)
+            if (Value == null)
             {
                 result = Null;
                 return false;
             }
             try
             {
-                result = DynamicFactory.Create(_value.GetType().InvokeMember(
+                result = WrapToDynamic(Value.GetType().InvokeMember(
                                                 binder.Name,
                                                 BindingFlags.InvokeMethod,
-                                                null, _value, args));
+                                                null, Value, args));
                 return true;
             }
             catch
@@ -142,20 +143,20 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         public override bool TryBinaryOperation(BinaryOperationBinder binder, object arg, out object result)
         {
-            var a = _value.To<bool>();
+            var a = Value.To<bool>();
             switch (binder.Operation)
             {
                 case ExpressionType.AndAlso:
-                    result = a && ((arg as DynamicPrimitive)?._value ?? arg).To<bool>();
+                    result = a && ((arg as DynamicPrimitive)?.Value ?? arg).To<bool>();
                     return true;
                 case ExpressionType.OrElse:
-                    result = a || ((arg as DynamicPrimitive)?._value ?? arg).To<bool>();
+                    result = a || ((arg as DynamicPrimitive)?.Value ?? arg).To<bool>();
                     return true;
                 case ExpressionType.And:
-                    result = a & ((arg as DynamicPrimitive)?._value ?? arg).To<bool>();
+                    result = a & ((arg as DynamicPrimitive)?.Value ?? arg).To<bool>();
                     return true;
                 case ExpressionType.Or:
-                    result = a | ((arg as DynamicPrimitive)?._value ?? arg).To<bool>();
+                    result = a | ((arg as DynamicPrimitive)?.Value ?? arg).To<bool>();
                     return true;
                 default:
                     break;
@@ -168,7 +169,7 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         public override bool TryUnaryOperation(UnaryOperationBinder binder, out object result)
         {
-            var value = _value.Convert<bool>(null);
+            var value = Value.Convert<bool>(null);
             if (value.Success == false) //转型失败
             {
                 result = null;
@@ -178,10 +179,10 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 case ExpressionType.IsFalse:
                 case ExpressionType.Not:
-                    result = value.OutputValue == false;
+                    result = value.Value == false;
                     return true;
                 case ExpressionType.IsTrue:
-                    result = value.OutputValue;
+                    result = value.Value;
                     return true;
                 default:
                     break;
@@ -194,7 +195,7 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         /// <param name="value"> </param>
         /// <returns> </returns>
-        public static implicit operator string(DynamicPrimitive value) => value._value.To<string>();
+        public static implicit operator string(DynamicPrimitive value) => value.Value.To<string>();
 
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
@@ -207,33 +208,37 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         /// <returns> 表示当前对象的字符串。 </returns>
         /// <filterpriority> 2 </filterpriority>
-        public override string ToString() => _value.To<string>();
+        public override string ToString() => Value.To<string>();
 
         /// <summary>
         /// 作为默认哈希函数。
         /// </summary>
         /// <returns> 当前对象的哈希代码。 </returns>
         /// <filterpriority> 2 </filterpriority>
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         private static int Compare(DynamicPrimitive a, object b)
         {
             var b1 = b as DynamicPrimitive;
             if (ReferenceEquals(b1, null) == false)
             {
-                b = b1._value;
+                b = b1.Value;
             }
             if (ReferenceEquals(b, null))
             {
                 return ReferenceEquals(a, null) ? 0 : 1;
             }
-            if (a._value == null)
+            if (a.Value == null)
             {
                 return -1;
             }
 
             var comparer = Comparer.DefaultInvariant;
-            return comparer.Compare(a._value.ChangeType(b.GetType()), b);
+            if (a.TryChangeType(a.Value, b.GetType(), out var c))
+            {
+                return comparer.Compare(c, b);
+            }
+            return -1;
         }
 
         #region 运算符重载
@@ -252,80 +257,85 @@ namespace zijian666.SuperConvert.Dynamic
 
         T ConvertTo<T>(IFormatProvider provider)
         {
-            var settings = new ConvertSettings();
-            if (provider != null)
+            if (provider == null)
             {
-                settings.Set<IFormatProvider>(provider, _value?.GetType());
+                return Value.Convert<T>(ConvertSettings).Value;
             }
-            var result = _value.Convert<T>(settings);
-            result.ThrowIfExceptional();
-            return result.OutputValue;
+            var convertSettings = new ConvertSettings()
+            {
+                FormatProviders = { [CustomType] = provider }
+            };
+            return Value.Convert<T>(convertSettings.Combin(ConvertSettings)).Value;
         }
         TypeCode IConvertible.GetTypeCode() =>
-            (_value as IConvertible)?.GetTypeCode() ?? TypeCode.Object;
+            (Value as IConvertible)?.GetTypeCode() ?? TypeCode.Object;
         bool IConvertible.ToBoolean(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToBoolean(provider) ?? ConvertTo<bool>(provider);
+            (Value as IConvertible)?.ToBoolean(provider) ?? ConvertTo<bool>(provider);
         byte IConvertible.ToByte(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToByte(provider) ?? ConvertTo<byte>(provider);
+            (Value as IConvertible)?.ToByte(provider) ?? ConvertTo<byte>(provider);
         char IConvertible.ToChar(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToChar(provider) ?? ConvertTo<char>(provider);
+            (Value as IConvertible)?.ToChar(provider) ?? ConvertTo<char>(provider);
         DateTime IConvertible.ToDateTime(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToDateTime(provider) ?? ConvertTo<DateTime>(provider);
+            (Value as IConvertible)?.ToDateTime(provider) ?? ConvertTo<DateTime>(provider);
         decimal IConvertible.ToDecimal(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToDecimal(provider) ?? ConvertTo<decimal>(provider);
+            (Value as IConvertible)?.ToDecimal(provider) ?? ConvertTo<decimal>(provider);
         double IConvertible.ToDouble(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToDouble(provider) ?? ConvertTo<double>(provider);
+            (Value as IConvertible)?.ToDouble(provider) ?? ConvertTo<double>(provider);
         short IConvertible.ToInt16(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToInt16(provider) ?? ConvertTo<short>(provider);
+            (Value as IConvertible)?.ToInt16(provider) ?? ConvertTo<short>(provider);
         int IConvertible.ToInt32(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToInt32(provider) ?? ConvertTo<int>(provider);
+            (Value as IConvertible)?.ToInt32(provider) ?? ConvertTo<int>(provider);
         long IConvertible.ToInt64(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToInt64(provider) ?? ConvertTo<long>(provider);
+            (Value as IConvertible)?.ToInt64(provider) ?? ConvertTo<long>(provider);
         sbyte IConvertible.ToSByte(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToSByte(provider) ?? ConvertTo<sbyte>(provider);
+            (Value as IConvertible)?.ToSByte(provider) ?? ConvertTo<sbyte>(provider);
         float IConvertible.ToSingle(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToSingle(provider) ?? ConvertTo<float>(provider);
+            (Value as IConvertible)?.ToSingle(provider) ?? ConvertTo<float>(provider);
         string IConvertible.ToString(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToString(provider) ?? ConvertTo<string>(provider);
+            (Value as IConvertible)?.ToString(provider) ?? ConvertTo<string>(provider);
         object IConvertible.ToType(Type conversionType, IFormatProvider provider)
         {
-            if (_value is IConvertible conv)
+            if (Value is IConvertible conv)
             {
                 return conv.ToType(conversionType, provider);
             }
-            var settings = new ConvertSettings();
-            if (provider != null)
+            if (provider == null)
             {
-                settings.Set<IFormatProvider>(provider, _value?.GetType());
+                return Value.Convert(conversionType, ConvertSettings).Value;
             }
-            var result = _value.Convert(conversionType, settings);
-            result.ThrowIfExceptional();
-            return result.OutputValue;
+            var convertSettings = new ConvertSettings()
+            {
+                FormatProviders = { [CustomType] = provider }
+            };
+            return Value.Convert(conversionType, convertSettings.Combin(ConvertSettings)).Value;
         }
         ushort IConvertible.ToUInt16(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToUInt16(provider) ?? ConvertTo<ushort>(provider);
+            (Value as IConvertible)?.ToUInt16(provider) ?? ConvertTo<ushort>(provider);
         uint IConvertible.ToUInt32(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToUInt32(provider) ?? ConvertTo<uint>(provider);
+            (Value as IConvertible)?.ToUInt32(provider) ?? ConvertTo<uint>(provider);
         ulong IConvertible.ToUInt64(IFormatProvider provider) =>
-            (_value as IConvertible)?.ToUInt64(provider) ?? ConvertTo<ulong>(provider);
+            (Value as IConvertible)?.ToUInt64(provider) ?? ConvertTo<ulong>(provider);
         string IFormattable.ToString(string format, IFormatProvider provider)
         {
-            if (_value is IFormattable formattable)
+            if (Value is IFormattable formattable)
             {
                 return formattable.ToString(format, provider);
             }
+            if (provider == null && string.IsNullOrWhiteSpace(format))
+            {
+                return Value.Convert<string>(ConvertSettings).Value;
+            }
+
             var settings = new ConvertSettings();
             if (provider != null)
             {
-                settings.Set<IFormatProvider>(provider, _value?.GetType());
+                settings.FormatProviders[CustomType] = provider;
             }
             if (!string.IsNullOrWhiteSpace(format))
             {
-                settings.Set(NamedServiceNames.FORMAT, format, _value?.GetType());
+                settings.FormatStrings[CustomType] = format;
             }
-            var result = _value.Convert<string>(settings);
-            result.ThrowIfExceptional();
-            return result.OutputValue;
+            return Value.Convert(conversionType, convertSettings.Combin(ConvertSettings)).Value;
         }
     }
 }

@@ -3,38 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 //using System.Runtime.Remoting;
-using System.Runtime.Serialization;
+using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Dynamic
 {
     /// <summary>
     /// 基于 <seealso cref="IDictionary" /> 的动态类型
     /// </summary>
-    public class DynamicDictionary : DynamicObject, IDictionary, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class DynamicDictionary : DynamicObjectBase<IDictionary>, IDictionary
     {
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="dict"> </param>
+        public DynamicDictionary(IDictionary value, IConvertSettings convertSettings)
+            : base(value, convertSettings)
+        {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+        }
+
+
         /// <summary>
         /// 获取一个值，该值指示对象是否为只读。
         /// </summary>
         public bool IsReadOnly { get; set; }
-
-        /// <summary>
-        /// 获取由此对象提供的自定义类型。
-        /// </summary>
-        /// <returns> 自定义类型。 </returns>
-        public virtual Type GetCustomType() => _dict?.GetType() ?? typeof(IDictionary);
-
-        /// <summary>
-        /// 打开该对象。
-        /// </summary>
-        /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _dict;
-
-        /// <summary>
-        /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
-        /// </summary>
-        /// <returns> 返回放入图形中的实际对象。 </returns>
-        /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _dict;
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。
@@ -42,7 +37,7 @@ namespace zijian666.SuperConvert.Dynamic
         /// <returns> 一个包含动态成员名称的序列。 </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            foreach (var key in _dict.Keys)
+            foreach (var key in Value.Keys)
             {
                 if (key is string str)
                 {
@@ -50,7 +45,6 @@ namespace zijian666.SuperConvert.Dynamic
                 }
             }
         }
-
 
         /// <summary>
         /// 提供类型转换运算的实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为将某个对象从一种类型转换为另一种类型的运算指定动态行为。
@@ -64,16 +58,16 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 类型转换运算的结果。 </param>
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType) && (_dict.Count == 1))
+            if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType) && (Value.Count == 1))
             {
-                var ee = _dict.Values.GetEnumerator();
+                var ee = Value.Values.GetEnumerator();
                 ee.MoveNext();
                 if (TryChangeType(ee.Current, binder.ReturnType, out result))
                 {
                     return true;
                 }
             }
-            return TryChangeType(_dict, binder.ReturnType, out result);
+            return TryChangeType(Value, binder.ReturnType, out result);
         }
 
         /// <summary>
@@ -88,12 +82,12 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 获取操作的结果。 例如，如果为某个属性调用该方法，则可以为 <paramref name="result" /> 指派该属性值。 </param>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = _dict[binder.Name];
+            result = Value[binder.Name];
             if (result != null)
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -121,7 +115,7 @@ namespace zijian666.SuperConvert.Dynamic
                 return false;
                 //throw new NotSupportedException("当前对象是只读的");
             }
-            _dict[binder.Name] = value;
+            Value[binder.Name] = value;
             return true;
         }
 
@@ -152,12 +146,12 @@ namespace zijian666.SuperConvert.Dynamic
                 result = DynamicPrimitive.Null;
                 return true;
             }
-            result = _dict[key];
+            result = Value[key];
             if (result != null)
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -190,56 +184,35 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 return false;
             }
-            _dict[key] = value;
+            Value[key] = value;
             return true;
         }
 
-        #region 必要属性构造函数
 
-        private readonly IDictionary _dict;
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        public DynamicDictionary() => _dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="comparer"> </param>
-        public DynamicDictionary(StringComparer comparer) => _dict = new Dictionary<string, object>(comparer);
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="dict"> </param>
-        public DynamicDictionary(IDictionary dict) => _dict = dict ?? new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-
-        #endregion
 
         #region 显示实现接口
 
-        IEnumerator IEnumerable.GetEnumerator() => _dict.GetEnumerator();
-        void IDictionary.Add(object key, object value) => _dict.Add(key, value);
-        void IDictionary.Clear() => _dict.Clear();
-        bool IDictionary.Contains(object key) => _dict.Contains(key);
-        IDictionaryEnumerator IDictionary.GetEnumerator() => _dict.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => Value.GetEnumerator();
+        void IDictionary.Add(object key, object value) => Value.Add(key, value);
+        void IDictionary.Clear() => Value.Clear();
+        bool IDictionary.Contains(object key) => Value.Contains(key);
+        IDictionaryEnumerator IDictionary.GetEnumerator() => Value.GetEnumerator();
         bool IDictionary.IsFixedSize => false;
         bool IDictionary.IsReadOnly => false;
-        ICollection IDictionary.Keys => _dict.Keys;
-        void IDictionary.Remove(object key) => _dict.Remove(key);
-        ICollection IDictionary.Values => _dict.Values;
+        ICollection IDictionary.Keys => Value.Keys;
+        void IDictionary.Remove(object key) => Value.Remove(key);
+        ICollection IDictionary.Values => Value.Values;
 
         object IDictionary.this[object key]
         {
-            get { return _dict[key]; }
-            set { _dict[key] = value; }
+            get { return Value[key]; }
+            set { Value[key] = value; }
         }
 
-        void ICollection.CopyTo(Array array, int index) => _dict.CopyTo(array, index);
-        int ICollection.Count => _dict.Count;
+        void ICollection.CopyTo(Array array, int index) => Value.CopyTo(array, index);
+        int ICollection.Count => Value.Count;
         bool ICollection.IsSynchronized { get; } = false;
-        object ICollection.SyncRoot => _dict;
+        object ICollection.SyncRoot => Value;
 
         #endregion
     }

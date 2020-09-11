@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Runtime.Serialization;
+using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Interface;
+
 //using System.Runtime.Remoting;
 
 namespace zijian666.SuperConvert.Dynamic
@@ -9,25 +11,23 @@ namespace zijian666.SuperConvert.Dynamic
     /// <summary>
     /// 基于 <seealso cref="object"/> 的动态类型
     /// </summary>
-    public class DynamicEntity : DynamicObject, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class DynamicEntity : DynamicObjectBase<object>
     {
-        private readonly object _entity;
-        private readonly PropertyHandler[] _properties;
-        private readonly int _propertyCount;
-        /// <summary>
-        /// 表示一个空的上下文
-        /// </summary>
-        private static readonly ConvertContext _emptyContext = new ConvertContext();
+        private readonly PropertiesCollection _properties;
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="entity"></param>
-        public DynamicEntity(object entity)
+        public DynamicEntity(object value, IConvertSettings convertSettings)
+            : base(value, convertSettings)
         {
-            _entity = entity ?? throw new ArgumentNullException(nameof(entity));
-            _properties = PropertyHelper.GetByType(entity.GetType());
-            _propertyCount = _properties.Length;
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            _properties = PropertyHelper.GetByType(value.GetType());
         }
 
         /// <summary>
@@ -35,59 +35,19 @@ namespace zijian666.SuperConvert.Dynamic
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private PropertyHandler this[string name]
-        {
-            get
-            {
-                for (var i = 0; i < _propertyCount; i++)
-                {
-                    var p = _properties[i];
-                    if (string.Equals(name, p.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return p;
-                    }
-                }
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// 获取由此对象提供的自定义类型。
-        /// </summary>
-        /// <returns> 自定义类型。 </returns>
-        public virtual Type GetCustomType() => _entity?.GetType() ?? typeof(object);
-
-
-        /// <summary>
-        /// 打开该对象。
-        /// </summary>
-        /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _entity;
-
-        /// <summary>
-        /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
-        /// </summary>
-        /// <returns> 返回放入图形中的实际对象。 </returns>
-        /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _entity;
+        private PropertyHandler this[string name] => _properties[name];
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。</summary>
         /// <returns>一个包含动态成员名称的序列。</returns>
-        public override IEnumerable<string> GetDynamicMemberNames()
-        {
-            for (var i = 0; i < _propertyCount; i++)
-            {
-                yield return _properties[i].Name;
-            }
-        }
+        public override IEnumerable<string> GetDynamicMemberNames() => _properties.Keys;
 
         /// <summary>
         /// 提供类型转换运算的实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为将某个对象从一种类型转换为另一种类型的运算指定动态行为。</summary>
         /// <returns>如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发语言特定的运行时异常。）</returns>
         /// <param name="binder">提供有关转换运算的信息。 binder.Type 属性提供必须将对象转换为的类型。 例如，对于 C# 中的语句 (String)sampleObject（Visual Basic 中为 CType(sampleObject, Type)）（其中 sampleObject 是派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类的类的一个实例），binder.Type 将返回 <see cref="T:System.String" /> 类型。 binder.Explicit 属性提供有关所发生转换的类型的信息。 对于显式转换，它返回 true；对于隐式转换，它返回 false。</param>
         /// <param name="result">类型转换运算的结果。</param>
-        public override bool TryConvert(ConvertBinder binder, out object result) => TryChangeType(_entity, binder.ReturnType, out result);
+        public override bool TryConvert(ConvertBinder binder, out object result) => TryChangeType(Value, binder.ReturnType, out result);
 
         /// <summary>
         /// 为获取成员值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为诸如获取属性值这样的操作指定动态行为。</summary>
@@ -97,11 +57,12 @@ namespace zijian666.SuperConvert.Dynamic
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             var p = this[binder.Name];
-            if (p?.Get != null)
+            var getter = ConvertSettings.ReflectCompiler?.CompileGetter<object>(p.Property) ?? p?.GetValue;
+            if (getter != null)
             {
-                result = p.Get(_entity);
+                result = getter(Value);
                 var r = result.Convert(binder.ReturnType, null);
-                result = r.Success ? DynamicFactory.Create(r.OutputValue) : DynamicPrimitive.Null;
+                result = r.Success ? WrapToDynamic(r.Value) : DynamicPrimitive.Null;
                 return r.Success;
             }
             result = DynamicPrimitive.Null;
@@ -116,11 +77,13 @@ namespace zijian666.SuperConvert.Dynamic
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             var p = this[binder.Name];
-            if (p == null)
+            var setter = ConvertSettings.ReflectCompiler?.CompileSetter<object>(p.Property) ?? p?.SetValue;
+            if (setter == null)
             {
                 return false;
             }
-            return p.SetValue(_emptyContext, _entity, value) != null;
+            setter(Value, value);
+            return true;
         }
     }
 }

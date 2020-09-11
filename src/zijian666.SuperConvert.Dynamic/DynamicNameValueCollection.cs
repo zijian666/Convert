@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Dynamic;
-using System.Runtime.Serialization;
+using zijian666.SuperConvert.Interface;
+
 //using System.Runtime.Remoting;
 
 namespace zijian666.SuperConvert.Dynamic
@@ -10,26 +11,21 @@ namespace zijian666.SuperConvert.Dynamic
     /// <summary>
     /// 基于 <seealso cref="NameValueCollection" /> 的动态类型
     /// </summary>
-    public class DynamicNameValueCollection : DynamicObject, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class DynamicNameValueCollection : DynamicObjectBase<NameValueCollection>
     {
-        private readonly NameValueCollection _items;
-
-        /// <summary>
-        /// 初始化默认实例
-        /// </summary>
-        public DynamicNameValueCollection() => _items = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// 初始化默认实例,并指示属性名的比较方式
-        /// </summary>
-        /// <param name="comparer"> 用于确定两个键是否相等，并为集合中的键生成哈希代码。 </param>
-        public DynamicNameValueCollection(StringComparer comparer) => _items = new NameValueCollection(comparer);
 
         /// <summary>
         /// 使用指定的<seealso cref="NameValueCollection" />来初始化实例
         /// </summary>
         /// <param name="nv"> </param>
-        public DynamicNameValueCollection(NameValueCollection nv) => _items = nv ?? new NameValueCollection(StringComparer.OrdinalIgnoreCase);
+        public DynamicNameValueCollection(NameValueCollection value, IConvertSettings convertSettings)
+            : base(value, convertSettings)
+        {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+        }
 
         /// <summary>
         /// 获取或设置实例是否为只读
@@ -37,25 +33,10 @@ namespace zijian666.SuperConvert.Dynamic
         public bool IsReadOnly { get; set; }
 
         /// <summary>
-        /// 获取由此对象提供的自定义类型。
-        /// </summary>
-        /// <returns> 自定义类型。 </returns>
-        public virtual Type GetCustomType() => typeof(NameValueCollection);
-
-        /// <summary> 打开该对象。 </summary>
-        /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _items;
-
-        /// <summary> 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。 </summary>
-        /// <returns> 返回放入图形中的实际对象。 </returns>
-        /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _items;
-
-        /// <summary>
         /// 返回所有动态成员名称的枚举。
         /// </summary>
         /// <returns> 一个包含动态成员名称的序列。 </returns>
-        public override IEnumerable<string> GetDynamicMemberNames() => _items.AllKeys;
+        public override IEnumerable<string> GetDynamicMemberNames() => Value.AllKeys;
 
         /// <summary>
         /// 提供类型转换运算的实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为将某个对象从一种类型转换为另一种类型的运算指定动态行为。
@@ -71,12 +52,12 @@ namespace zijian666.SuperConvert.Dynamic
         {
             if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType))
             {
-                if ((_items.Count == 1) && TryChangeType(_items[0], binder.ReturnType, out result))
+                if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
                 {
                     return true;
                 }
             }
-            return TryChangeType(_items, binder.ReturnType, out result);
+            return TryChangeType(Value, binder.ReturnType, out result);
         }
 
         /// <summary>
@@ -91,12 +72,12 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 获取操作的结果。 例如，如果为某个属性调用该方法，则可以为 <paramref name="result" /> 指派该属性值。 </param>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = _items[binder.Name];
+            result = Value[binder.Name];
             if (result != null)
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -124,7 +105,7 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 return false;
             }
-            _items[binder.Name] = value.To<string>();
+            Value[binder.Name] = value.To<string>();
             return true;
         }
 
@@ -137,14 +118,14 @@ namespace zijian666.SuperConvert.Dynamic
             var index = indexes[0];
             if (index is string name)
             {
-                return _items[name];
+                return Value[name];
             }
             var i = index.To(-1);
-            if ((i < 0) || (i >= _items.Count))
+            if ((i < 0) || (i >= Value.Count))
             {
                 return null;
             }
-            return _items[i];
+            return Value[i];
         }
 
         /// <summary>
@@ -164,7 +145,7 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -201,15 +182,15 @@ namespace zijian666.SuperConvert.Dynamic
             var str = value.To<string>();
             if (index is string name)
             {
-                _items[name] = str;
+                Value[name] = str;
                 return true;
             }
             var i = index.To(-1);
-            if ((i < 0) || (i >= _items.Count))
+            if ((i < 0) || (i >= Value.Count))
             {
                 return false;
             }
-            _items[_items.GetKey(i)] = str;
+            Value[Value.GetKey(i)] = str;
             return true;
         }
     }

@@ -10,12 +10,12 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Core
 {
-    class CombinConvertSettings : IConvertSettings
+    class AggregateConvertSettings : IConvertSettings
     {
         private readonly IConvertSettings _settings1;
         private readonly IConvertSettings _settings2;
 
-        public CombinConvertSettings(IConvertSettings settings1, IConvertSettings settings2)
+        public AggregateConvertSettings(IConvertSettings settings1, IConvertSettings settings2)
         {
             _settings1 = settings1;
             _settings2 = settings2;

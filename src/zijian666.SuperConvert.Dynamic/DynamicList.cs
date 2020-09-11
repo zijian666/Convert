@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Runtime.Serialization;
+using zijian666.SuperConvert.Interface;
+
 //using System.Runtime.Remoting;
 
 namespace zijian666.SuperConvert.Dynamic
@@ -10,80 +12,75 @@ namespace zijian666.SuperConvert.Dynamic
     /// <summary>
     /// 基于 <seealso cref="IList" /> 的动态类型
     /// </summary>
-    public class DynamicList : DynamicObject, IList, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class DynamicList : DynamicObjectBase<IList>, IList, IObjectReference//, IObjectHandle, ICustomTypeProvider
     {
         private static readonly IEnumerable<string> _dynamicMemberNames = new List<string> { "Count", "Length" }.AsReadOnly();
-        private readonly IList _list;
-
-        /// <summary>
-        /// 初始化默认实例
-        /// </summary>
-        public DynamicList() => _list = new ArrayList();
 
         /// <summary>
         /// 初始化指定集合的动态类型包装
         /// </summary>
         /// <param name="list"> </param>
-        public DynamicList(IList list) => _list = list ?? new ArrayList();
-
-        /// <summary>
-        /// 获取由此对象提供的自定义类型。
-        /// </summary>
-        /// <returns> 自定义类型。 </returns>
-        public virtual Type GetCustomType() => _list?.GetType() ?? typeof(IList);
+        public DynamicList(IList value, IConvertSettings convertSettings)
+            : base(value, convertSettings)
+        {
+            if (value is null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+        }
 
         /// <summary>
         /// 获取一个值，该值指示当前实例是否为只读。
         /// </summary>
-        public bool IsReadOnly => _list.IsReadOnly;
+        public bool IsReadOnly => Value.IsReadOnly;
 
 
-        int IList.Add(object value) => _list.Add(value);
+        int IList.Add(object value) => Value.Add(value);
 
-        void IList.Clear() => _list.Clear();
+        void IList.Clear() => Value.Clear();
 
-        bool IList.Contains(object value) => _list.Contains(value);
+        bool IList.Contains(object value) => Value.Contains(value);
 
-        int IList.IndexOf(object value) => _list.IndexOf(value);
+        int IList.IndexOf(object value) => Value.IndexOf(value);
 
-        void IList.Insert(int index, object value) => _list.Insert(index, value);
+        void IList.Insert(int index, object value) => Value.Insert(index, value);
 
-        bool IList.IsFixedSize => _list.IsFixedSize;
+        bool IList.IsFixedSize => Value.IsFixedSize;
 
-        void IList.Remove(object value) => _list.Remove(value);
+        void IList.Remove(object value) => Value.Remove(value);
 
-        void IList.RemoveAt(int index) => _list.RemoveAt(index);
+        void IList.RemoveAt(int index) => Value.RemoveAt(index);
 
         object IList.this[int index]
         {
             get
             {
-                if ((index >= 0) && (index < _list.Count))
+                if ((index >= 0) && (index < Value.Count))
                 {
-                    return DynamicFactory.Create(_list[index]);
+                    return WrapToDynamic(Value[index]);
                 }
                 return DynamicPrimitive.Null;
             }
-            set { _list[index] = value; }
+            set { Value[index] = value; }
         }
 
-        void ICollection.CopyTo(Array array, int index) => _list.CopyTo(array, index);
+        void ICollection.CopyTo(Array array, int index) => Value.CopyTo(array, index);
 
-        int ICollection.Count => _list.Count;
+        int ICollection.Count => Value.Count;
 
-        bool ICollection.IsSynchronized => _list.IsSynchronized;
+        bool ICollection.IsSynchronized => Value.IsSynchronized;
 
-        object ICollection.SyncRoot => _list;
+        object ICollection.SyncRoot => Value;
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var item in _list)
+            foreach (var item in Value)
             {
                 if (item == null)
                 {
                     yield return DynamicPrimitive.Null;
                 }
-                yield return DynamicFactory.Create(item);
+                yield return WrapToDynamic(item);
             }
         }
 
@@ -92,14 +89,14 @@ namespace zijian666.SuperConvert.Dynamic
         /// 打开该对象。
         /// </summary>
         /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _list;
+        public virtual object Unwrap() => Value;
 
         /// <summary>
         /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
         /// </summary>
         /// <returns> 返回放入图形中的实际对象。 </returns>
         /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _list;
+        public virtual object GetRealObject(StreamingContext context) => Value;
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。
@@ -121,12 +118,12 @@ namespace zijian666.SuperConvert.Dynamic
         {
             if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType))
             {
-                if ((_list.Count == 1) && TryChangeType(_list[0], binder.ReturnType, out result))
+                if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
                 {
                     return true;
                 }
             }
-            return TryChangeType(_list, binder.ReturnType, out result);
+            return TryChangeType(Value, binder.ReturnType, out result);
         }
 
         /// <summary>
@@ -144,7 +141,7 @@ namespace zijian666.SuperConvert.Dynamic
             if ("count".Equals(binder.Name, StringComparison.OrdinalIgnoreCase)
                 || "length".Equals(binder.Name, StringComparison.OrdinalIgnoreCase))
             {
-                result = _list.Count;
+                result = Value.Count;
                 return true;
             }
             result = null;
@@ -158,7 +155,7 @@ namespace zijian666.SuperConvert.Dynamic
                 return -1;
             }
             var i = indexes[0].To(-1);
-            if ((i < 0) || (i >= _list.Count))
+            if ((i < 0) || (i >= Value.Count))
             {
                 return -1;
             }
@@ -178,9 +175,9 @@ namespace zijian666.SuperConvert.Dynamic
         public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
         {
             var i = Indexer(indexes);
-            if ((i >= 0) && TryChangeType(_list[i], binder.ReturnType, out result))
+            if ((i >= 0) && TryChangeType(Value[i], binder.ReturnType, out result))
             {
-                result = DynamicFactory.Create(result);
+                result = WrapToDynamic(result);
                 return true;
             }
 
@@ -213,7 +210,7 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 return false;
             }
-            _list[i] = value;
+            Value[i] = value;
             return true;
         }
     }

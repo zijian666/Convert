@@ -4,13 +4,17 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Extensions
 {
-    static class ConvertSettingsExtensions
+    public static class ConvertSettingsExtensions
     {
         public static IConvertSettings Combin(this IConvertSettings settings1, IConvertSettings settings2)
         {
             if (settings1 is null && settings2 is null)
             {
                 return Converts.Settings;
+            }
+            if (ReferenceEquals(settings1, settings2))
+            {
+                return settings1;
             }
             if (settings1 is null)
             {
@@ -20,7 +24,7 @@ namespace zijian666.SuperConvert.Extensions
             {
                 return settings1;
             }
-            return new CombinConvertSettings(settings1, settings2);
+            return new AggregateConvertSettings(settings1, settings2);
         }
 
         public static IFormatProvider GetFormatProvider(this IConvertSettings settings, Type type)

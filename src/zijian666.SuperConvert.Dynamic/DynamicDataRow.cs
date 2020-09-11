@@ -2,29 +2,34 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Dynamic;
-//using System.Runtime.Remoting;
-using System.Runtime.Serialization;
+using zijian666.SuperConvert.Core;
+using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Dynamic
 {
     /// <summary>
     /// 基于 <seealso cref="DataRow" /> 的动态类型
     /// </summary>
-    public class DynamicDataRow : DynamicObject, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class DynamicDataRow : DynamicObjectBase<DataRow>
     {
-        private readonly DataRow _row;
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="row"> </param>
+        public DynamicDataRow(DataRow row, IConvertSettings convertSettings)
+            : base(row, convertSettings)
+        {
+            if (row is null)
+            {
+                throw new ArgumentNullException(nameof(row));
+            }
+        }
 
         /// <summary>
         /// 初始化
         /// </summary>
         /// <param name="row"> </param>
-        public DynamicDataRow(DataRow row) => _row = row ?? throw new ArgumentNullException(nameof(row));
-
-        /// <summary>
-        /// 初始化
-        /// </summary>
-        /// <param name="row"> </param>
-        public DynamicDataRow(DataRowView row) : this(row?.Row) { }
+        public DynamicDataRow(DataRowView row, ConvertSettings settings) : this(row?.Row, settings) { }
 
         /// <summary>
         /// 是否制度
@@ -32,32 +37,12 @@ namespace zijian666.SuperConvert.Dynamic
         public bool IsReadOnly { get; set; }
 
         /// <summary>
-        /// 获取由此对象提供的自定义类型。
-        /// </summary>
-        /// <returns> 自定义类型。 </returns>
-        public virtual Type GetCustomType() => typeof(DataRow);
-
-        /// <summary>
-        /// 打开该对象。
-        /// </summary>
-        /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => _row;
-
-        /// <summary>
-        /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
-        /// </summary>
-        /// <returns> 返回放入图形中的实际对象。 </returns>
-        /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => _row;
-
-
-        /// <summary>
         /// 返回所有动态成员名称的枚举。
         /// </summary>
         /// <returns> 一个包含动态成员名称的序列。 </returns>
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            foreach (DataColumn col in _row.Table.Columns)
+            foreach (DataColumn col in Value.Table.Columns)
             {
                 yield return col.ColumnName;
             }
@@ -77,14 +62,15 @@ namespace zijian666.SuperConvert.Dynamic
         {
             if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType))
             {
-                var arr = _row.ItemArray;
+                var arr = Value.ItemArray;
                 if ((arr.Length == 1) && TryChangeType(arr[0], binder.ReturnType, out result))
                 {
                     return true;
                 }
             }
-            return TryChangeType(_row, binder.ReturnType, out result);
+            return TryChangeType(Value, binder.ReturnType, out result);
         }
+
 
         /// <summary>
         /// 为获取成员值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为诸如获取属性值这样的操作指定动态行为。
@@ -98,12 +84,12 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 获取操作的结果。 例如，如果为某个属性调用该方法，则可以为 <paramref name="result" /> 指派该属性值。 </param>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = _row[binder.Name];
+            result = Value[binder.Name];
             if (result != null)
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -132,7 +118,7 @@ namespace zijian666.SuperConvert.Dynamic
                 return false;
                 //throw new NotSupportedException("当前对象是只读的");
             }
-            _row[binder.Name] = value.To<string>();
+            Value[binder.Name] = value.To<string>();
             return true;
         }
 
@@ -150,18 +136,18 @@ namespace zijian666.SuperConvert.Dynamic
             var index = indexes[0];
             if (index is string name)
             {
-                if (_row.Table.Columns.Contains(name))
+                if (Value.Table.Columns.Contains(name))
                 {
-                    return _row[name];
+                    return Value[name];
                 }
                 return null;
             }
             var i = index.To(-1);
-            if ((i < 0) || (i > _row.ItemArray.Length))
+            if ((i < 0) || (i > Value.ItemArray.Length))
             {
                 return null;
             }
-            return _row.ItemArray[i];
+            return Value.ItemArray[i];
         }
 
         /// <summary>
@@ -181,7 +167,7 @@ namespace zijian666.SuperConvert.Dynamic
             {
                 if (TryChangeType(result, binder.ReturnType, out result))
                 {
-                    result = DynamicFactory.Create(result);
+                    result = WrapToDynamic(result);
                     return true;
                 }
             }
@@ -217,24 +203,24 @@ namespace zijian666.SuperConvert.Dynamic
             var index = indexes[0];
             if (index is string name)
             {
-                if (_row.Table.Columns.Contains(name))
+                if (Value.Table.Columns.Contains(name))
                 {
-                    var col = _row.Table.Columns[name];
+                    var col = Value.Table.Columns[name];
                     if (TryChangeType(value, col.DataType, out value))
                     {
-                        _row[col] = value;
+                        Value[col] = value;
                     }
                 }
             }
             else
             {
                 var i = index.To(-1);
-                if ((i >= 0) && (i < _row.ItemArray.Length))
+                if ((i >= 0) && (i < Value.ItemArray.Length))
                 {
-                    var col = _row.Table.Columns[i];
+                    var col = Value.Table.Columns[i];
                     if (TryChangeType(value, col.DataType, out value))
                     {
-                        _row[col] = value;
+                        Value[col] = value;
                     }
                 }
             }
