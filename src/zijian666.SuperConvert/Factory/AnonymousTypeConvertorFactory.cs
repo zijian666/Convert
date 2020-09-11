@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Factory
     {
         public IEnumerable<MatchedConvertor<T>> Create<T>()
         {
-            if (typeof(T).Name.StartsWith("<>f__AnonymousType"))
+            if (!typeof(T).IsArray && typeof(T).Name.StartsWith("<>f__AnonymousType"))
             {
                 var convertor = new AnonymousTypeConvertor<T>();
                 yield return new MatchedConvertor<T>(convertor, convertor.Priority, MacthedLevel.Full);

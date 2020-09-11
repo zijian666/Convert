@@ -62,8 +62,13 @@ namespace zijian666.SuperConvert.Convertor.Base
                 return ConvertResult<T>.NULL;
             }
 
-            // 精确匹配
+            // 字符串之前已经处理过了 这里跳过
+            if (input is string)
+            {
+                return ConvertResult<T>.NULL;
+            }
 
+            // 精确匹配
             var invoker0 = GetInvoker(input.GetType());
             if (invoker0 != null)
             {
@@ -74,7 +79,6 @@ namespace zijian666.SuperConvert.Convertor.Base
                 }
                 exceptions += result.Exception;
             }
-
 
             //获取指定输入类型的转换方法调用器
             var invokers = GetInvokers(input.GetType());
@@ -116,7 +120,6 @@ namespace zijian666.SuperConvert.Convertor.Base
                 }
             }
 
-
             return ConvertResult<T>.NULL;
 
         }
@@ -127,22 +130,82 @@ namespace zijian666.SuperConvert.Convertor.Base
             //字符串类型的序列化器
             if (input is string str)
             {
+                if (this is IFrom<string, T> from)
+                {
+                    try
+                    {
+                        var result = from.From(context, str);
+                        if (result.Success)
+                        {
+                            return result;
+                        }
+                        exceptions += result.Exception;
+
+                    }
+                    catch (Exception e)
+                    {
+                        exceptions += e;
+                    }
+                }
+
                 if (OutputType.IsMetaType())
                 {
                     return ConvertResult<T>.NULL;
                 }
+
                 var serializer = context.Settings.StringSerializer;
-                if (serializer != null)
+                if (serializer == null)
+                {
+                    return ConvertResult<T>.NULL;
+                }
+
+                try
+                {
+                    return (T)serializer.ToObject(str, typeof(T));
+                }
+                catch (Exception ex)
+                {
+                    exceptions += ex;
+                }
+
+                if (this is IFrom<Dictionary<string, object>, T> from1)
                 {
                     try
                     {
-                        return (T)serializer.ToObject(str, typeof(T));
+                        var dict = (Dictionary<string, object>)serializer.ToObject(str, typeof(Dictionary<string, object>));
+                        var result = from1.From(context, dict);
+                        if (result.Success)
+                        {
+                            return result;
+                        }
+                        exceptions += result.Exception;
+
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        exceptions += ex;
+                        exceptions += e;
                     }
                 }
+
+                if (this is IFrom<object[], T> from2)
+                {
+                    try
+                    {
+                        var dict = (object[])serializer.ToObject(str, typeof(object[]));
+                        var result = from2.From(context, dict);
+                        if (result.Success)
+                        {
+                            return result;
+                        }
+
+                        exceptions += result.Exception;
+                    }
+                    catch (Exception e)
+                    {
+                        exceptions += e;
+                    }
+                }
+                return ConvertResult<T>.NULL;
             }
             else if (OutputType == typeof(string))
             {

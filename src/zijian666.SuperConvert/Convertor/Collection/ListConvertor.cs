@@ -7,7 +7,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class ListConvertor<TList, TValue> : AllowNullConvertor<TList>, IFrom<string, TList>, IFrom<object, TList>
+    public class ListConvertor<TList, TValue> : AllowNullConvertor<TList>, IFrom<string, TList>, IFrom<object, TList>, IFrom<object[], TList>
         where TList : IList<TValue>
     {
         public ConvertResult<TList> From(IConvertContext context, string input)
@@ -69,5 +69,7 @@ namespace zijian666.SuperConvert.Convertor
             }
             return list;
         }
+
+        public ConvertResult<TList> From(IConvertContext context, object[] input) => From(context, input.GetEnumerator());
     }
 }

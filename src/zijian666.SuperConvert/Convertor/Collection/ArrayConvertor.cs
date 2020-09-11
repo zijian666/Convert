@@ -9,7 +9,7 @@ using zijian666.SuperConvert.Interface;
 namespace zijian666.SuperConvert.Convertor
 {
 
-    public class ArrayConvertor<T> : AllowNullConvertor<T[]>, IFrom<string, T[]>, IFrom<object, T[]>
+    public class ArrayConvertor<T> : AllowNullConvertor<T[]>, IFrom<string, T[]>, IFrom<object, T[]>, IFrom<object[], T[]>
     {
         public ConvertResult<T[]> From(IConvertContext context, string input)
         {
@@ -77,5 +77,7 @@ namespace zijian666.SuperConvert.Convertor
             }
             return list.ToArray();
         }
+
+        public ConvertResult<T[]> From(IConvertContext context, object[] input) => From(context, input.GetEnumerator());
     }
 }

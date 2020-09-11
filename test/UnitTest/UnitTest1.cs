@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,11 @@ namespace UnitTest
     [TestClass]
     public class UnitTest1
     {
+        [TestInitialize]
+        public void Before()
+        {
+            Converts.Settings.Trace = new TextWriterTraceListener(Console.Out);
+        }
         class User
         {
             public int ID { get; set; }
@@ -516,15 +522,15 @@ namespace UnitTest
         public void 优化单值转数组的体验()
         {
             var x = 123456;
-            //var a = x.To<string[]>();
-            //Assert.AreEqual(1, a.Length);
-            //Assert.AreEqual(x.ToString(), a[0]);
-            //var b = x.To<int[]>();
-            //Assert.AreEqual(1, b.Length);
-            //Assert.AreEqual(x, b[0]);
-            //var c = x.To<long[]>();
-            //Assert.AreEqual(1, c.Length);
-            //Assert.AreEqual((long)x, c[0]);
+            var a = x.To<string[]>();
+            Assert.AreEqual(1, a.Length);
+            Assert.AreEqual(x.ToString(), a[0]);
+            var b = x.To<int[]>();
+            Assert.AreEqual(1, b.Length);
+            Assert.AreEqual(x, b[0]);
+            var c = x.To<long[]>();
+            Assert.AreEqual(1, c.Length);
+            Assert.AreEqual((long)x, c[0]);
             var d = x.To<object[]>();
             Assert.AreEqual(1, d.Length);
             Assert.AreEqual(x, d[0]);

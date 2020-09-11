@@ -17,7 +17,7 @@ namespace zijian666.SuperConvert.Convertor
             var dict = context.Settings.StringSerializer?.ToObject(input, typeof(Dictionary<string, object>));
             if (dict == null)
             {
-                return null;
+                return context.ConvertFail(this, input);
             }
             return From(context, dict);
         }
@@ -32,6 +32,7 @@ namespace zijian666.SuperConvert.Convertor
 
             //FormatterServices.GetUninitializedObject()
             var rs = context.Settings.GetResourceStrings();
+            var matched = 0;
             while (enumerator.MoveNext())
             {
                 var key = enumerator.GetKey();
@@ -47,6 +48,7 @@ namespace zijian666.SuperConvert.Convertor
                     continue;
                 }
 
+                matched++;
                 var value = context.Convert(parameter.ParameterType, enumerator.OriginalValue);
                 if (!value.Success)
                 {
@@ -56,7 +58,10 @@ namespace zijian666.SuperConvert.Convertor
 
                 arguments[parameter.Position] = value.Value;
             }
-
+            if (matched == 0)
+            {
+                return context.ConvertFail(this, input);
+            }
             for (var i = 0; i < arguments.Length; i++)
             {
                 if (arguments[i] == null)

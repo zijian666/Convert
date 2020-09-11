@@ -41,7 +41,7 @@ namespace zijian666.SuperConvert.Core
         private readonly IConvertContext _context;
         private readonly IConvertor<TKey> _keyConvertor;
         private readonly IConvertor<TValue> _valueConvertor;
-        private TValue _single;
+        private object _single;
 
         enum InputType
         {
@@ -220,7 +220,7 @@ namespace zijian666.SuperConvert.Core
                         var inputType = input.GetType();
                         if (inputType.IsMetaType())
                         {
-                            _single = (TValue)input;
+                            _single = input;
                             _type = InputType.Single;
                         }
                         else if (typeof(TValue) == typeof(object))
@@ -303,7 +303,7 @@ namespace zijian666.SuperConvert.Core
                     }
                     return _valueConvertor.Convert(_context, OriginalValue);
                 case InputType.Single:
-                    return _single;
+                    return _valueConvertor.Convert(_context, _single);
                 default:
                     var value = OriginalValue;
                     return value is TValue t ? t : _valueConvertor.Convert(_context, OriginalValue);

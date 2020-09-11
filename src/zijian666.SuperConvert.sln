@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{B84AA1F7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zijian666.SuperConvert.Json", "zijian666.SuperConvert.Json\zijian666.SuperConvert.Json.csproj", "{626FD27A-414B-439F-8F55-051609A7AB5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "zijian666.SuperConvert.Dynamic", "zijian666.SuperConvert.Dynamic\zijian666.SuperConvert.Dynamic.csproj", "{21C90C8A-17CC-412F-95C7-3AC9244D9547}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{626FD27A-414B-439F-8F55-051609A7AB5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{626FD27A-414B-439F-8F55-051609A7AB5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{626FD27A-414B-439F-8F55-051609A7AB5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21C90C8A-17CC-412F-95C7-3AC9244D9547}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21C90C8A-17CC-412F-95C7-3AC9244D9547}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21C90C8A-17CC-412F-95C7-3AC9244D9547}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21C90C8A-17CC-412F-95C7-3AC9244D9547}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +51,7 @@ Global
 		{54B83348-81B9-4B0F-B38C-41BFCE6F3B0C} = {D7225311-8947-4626-A777-8BD5F24A16E7}
 		{1480036E-AD53-4F7F-87A4-87B97A873D42} = {8DF8798C-C985-4854-B7FE-AE1736CB55D2}
 		{626FD27A-414B-439F-8F55-051609A7AB5A} = {D7225311-8947-4626-A777-8BD5F24A16E7}
+		{21C90C8A-17CC-412F-95C7-3AC9244D9547} = {D7225311-8947-4626-A777-8BD5F24A16E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {30C1249D-68D6-4B00-B4C4-A7C3CB165802}

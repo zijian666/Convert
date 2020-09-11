@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -153,7 +153,6 @@ namespace zijian666.SuperConvert
             var builder = new ConvertorBuilder(factories.ToArray());
             Settings = new ConvertSettings(builder)
             {
-                Trace = new TextWriterTraceListener(Console.Out),
                 StringSeparator = ",",
                 Encoding = Encoding.UTF8,
                 CultureInfo = CultureInfo.CurrentUICulture,
@@ -180,6 +179,8 @@ namespace zijian666.SuperConvert
         public static T To<T>(this object value, T defaultValue) => Convert<T>(value, null).GetValueOrDefalut(defaultValue);
 
         public static T To<T>(this object value) => Convert<T>(value, null).Value;
+
+        public static dynamic ToDynamic(this object value) => To<DynamicObject>(value);
 
         /// <summary>
         /// 获取一个类型的默认值
@@ -265,6 +266,7 @@ namespace zijian666.SuperConvert
 
         public static void SetFormatterConverter(this ISlot<IFormatterConverter> slot)
             => slot.Set(FormatterConverter.Instance);
+
     }
 
 }

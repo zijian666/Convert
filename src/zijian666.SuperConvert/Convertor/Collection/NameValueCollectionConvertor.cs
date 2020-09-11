@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
@@ -7,7 +8,7 @@ using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Convertor
 {
-    public class NameValueCollectionConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>
+    public class NameValueCollectionConvertor<T> : AllowNullConvertor<T>, IFrom<object, T>, IFrom<Dictionary<string, object>, T>
         where T : NameValueCollection
     {
         public ConvertResult<T> From(IConvertContext context, object input)
@@ -39,5 +40,7 @@ namespace zijian666.SuperConvert.Convertor
             }
             return collection;
         }
+
+        public ConvertResult<T> From(IConvertContext context, Dictionary<string, object> input) => From(context, (object)input);
     }
 }

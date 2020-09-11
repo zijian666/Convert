@@ -1,4 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Diagnostics;
 using zijian666.SuperConvert;
 using zijian666.SuperConvert.Convertor.Base;
 using zijian666.SuperConvert.Core;
@@ -9,6 +11,13 @@ namespace UnitTest
     [TestClass]
     public class UnitTest2
     {
+
+        [TestInitialize]
+        public void Before()
+        {
+            Converts.Settings.Trace = new TextWriterTraceListener(Console.Out);
+        }
+
         [TestMethod]
         public void 自定义转换器()
         {
