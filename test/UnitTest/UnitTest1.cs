@@ -19,7 +19,10 @@ namespace UnitTest
         [TestInitialize]
         public void Before()
         {
-            Converts.Settings.Trace = new TextWriterTraceListener(Console.Out);
+            if (!Debugger.IsAttached)
+            {
+                Converts.Settings.Trace = new TextWriterTraceListener(Console.Out);
+            }
         }
         class User
         {

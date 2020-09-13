@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\zijian666.SuperConvert.Dynamic\zijian666.SuperConvert.Dynamic.csproj" />
     <ProjectReference Include="..\..\src\zijian666.SuperConvert.Json\zijian666.SuperConvert.Json.csproj" />
     <ProjectReference Include="..\..\src\zijian666.SuperConvert\zijian666.SuperConvert.csproj" />
   </ItemGroup>
