@@ -12,9 +12,11 @@ namespace zijian666.SuperConvert.Dynamic
     /// <summary>
     /// 基于 <seealso cref="IList" /> 的动态类型
     /// </summary>
-    internal class DynamicList : DynamicObjectBase<IList>, IList, IObjectReference//, IObjectHandle, ICustomTypeProvider
+    internal class
+        DynamicList : DynamicObjectBase<IList>, IList, IObjectReference //, IObjectHandle, ICustomTypeProvider
     {
-        private static readonly IEnumerable<string> _dynamicMemberNames = new List<string> { "Count", "Length" }.AsReadOnly();
+        private static readonly IEnumerable<string> _dynamicMemberNames =
+            new List<string> { "Count", "Length" }.AsReadOnly();
 
         /// <summary>
         /// 初始化指定集合的动态类型包装
@@ -29,10 +31,7 @@ namespace zijian666.SuperConvert.Dynamic
             }
         }
 
-        /// <summary>
-        /// 获取一个值，该值指示当前实例是否为只读。
-        /// </summary>
-        public bool IsReadOnly => Value.IsReadOnly;
+        public override bool IsReadOnly => Value.IsReadOnly;
 
 
         int IList.Add(object value) => Value.Add(value);
@@ -59,6 +58,7 @@ namespace zijian666.SuperConvert.Dynamic
                 {
                     return WrapToDynamic(Value[index]);
                 }
+
                 return DynamicPrimitive.Null;
             }
             set { Value[index] = value; }
@@ -80,23 +80,10 @@ namespace zijian666.SuperConvert.Dynamic
                 {
                     yield return DynamicPrimitive.Null;
                 }
+
                 yield return WrapToDynamic(item);
             }
         }
-
-
-        /// <summary>
-        /// 打开该对象。
-        /// </summary>
-        /// <returns> 已打开的对象。 </returns>
-        public virtual object Unwrap() => Value;
-
-        /// <summary>
-        /// 返回应进行反序列化的真实对象（而不是序列化流指定的对象）。
-        /// </summary>
-        /// <returns> 返回放入图形中的实际对象。 </returns>
-        /// <param name="context"> 当前对象从其中进行反序列化的 <see cref="T:System.Runtime.Serialization.StreamingContext" />。 </param>
-        public virtual object GetRealObject(StreamingContext context) => Value;
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。
@@ -116,14 +103,17 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 类型转换运算的结果。 </param>
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType))
+            if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
             {
-                if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
-                {
-                    return true;
-                }
+                return true;
             }
             return TryChangeType(Value, binder.ReturnType, out result);
+        }
+
+        protected override object this[int index]
+        {
+            get => Value[index];
+            set => Value[index] = value;
         }
 
         /// <summary>
@@ -144,74 +134,9 @@ namespace zijian666.SuperConvert.Dynamic
                 result = Value.Count;
                 return true;
             }
+
             result = null;
             return false;
-        }
-
-        private int Indexer(object[] indexes)
-        {
-            if ((indexes == null) || (indexes.Length != 1))
-            {
-                return -1;
-            }
-            var i = indexes[0].To(-1);
-            if ((i < 0) || (i >= Value.Count))
-            {
-                return -1;
-            }
-            return i;
-        }
-
-        /// <summary>
-        /// 为按索引获取值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为索引操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发运行时异常。） </returns>
-        /// <param name="binder"> 提供有关该操作的信息。 </param>
-        /// <param name="indexes">
-        /// 该操作中使用的索引。 例如，对于 C# 中的 sampleObject[3] 操作（Visual Basic 中为 sampleObject(3)）（其中 sampleObject 派生自
-        /// DynamicObject 类），<paramref name="indexes[0]" /> 等于 3。
-        /// </param>
-        /// <param name="result"> 索引操作的结果。 </param>
-        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
-        {
-            var i = Indexer(indexes);
-            if ((i >= 0) && TryChangeType(Value[i], binder.ReturnType, out result))
-            {
-                result = WrapToDynamic(result);
-                return true;
-            }
-
-            result = DynamicPrimitive.Null;
-            return true;
-        }
-
-        /// <summary>
-        /// 为按索引设置值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为按指定索引访问对象的操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发语言特定的运行时异常。） </returns>
-        /// <param name="binder"> 提供有关该操作的信息。 </param>
-        /// <param name="indexes">
-        /// 该操作中使用的索引。 例如，对于 C# 中的 sampleObject[3] = 10 操作（Visual Basic 中为 sampleObject(3) = 10）（其中
-        /// sampleObject 派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类），<paramref name="indexes[0]" /> 等于 3。
-        /// </param>
-        /// <param name="value">
-        /// 要为具有指定索引的对象设置的值。 例如，对于 C# 中的 sampleObject[3] = 10 操作（Visual Basic 中为 sampleObject(3) = 10）（其中
-        /// sampleObject 派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类），<paramref name="value" /> 等于 10。
-        /// </param>
-        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
-        {
-            if (IsReadOnly)
-            {
-                return false;
-            }
-
-            var i = Indexer(indexes);
-            if (i < 0)
-            {
-                return false;
-            }
-            Value[i] = value;
-            return true;
         }
     }
 }

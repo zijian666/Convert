@@ -25,11 +25,8 @@ namespace zijian666.SuperConvert.Dynamic
             }
         }
 
+        public override bool IsReadOnly => Value.IsReadOnly;
 
-        /// <summary>
-        /// 获取一个值，该值指示对象是否为只读。
-        /// </summary>
-        public bool IsReadOnly { get; set; }
 
         /// <summary>
         /// 返回所有动态成员名称的枚举。
@@ -58,137 +55,25 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 类型转换运算的结果。 </param>
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType) && (Value.Count == 1))
+            if (Value.Count == 1)
             {
-                var ee = Value.Values.GetEnumerator();
-                ee.MoveNext();
-                if (TryChangeType(ee.Current, binder.ReturnType, out result))
+                foreach (var item in Value.Values)
                 {
-                    return true;
+                    if (TryChangeType(item, binder.ReturnType, out result))
+                    {
+                        return true;
+                    }
+                    break;
                 }
             }
             return TryChangeType(Value, binder.ReturnType, out result);
         }
 
-        /// <summary>
-        /// 为获取成员值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为诸如获取属性值这样的操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发运行时异常。） </returns>
-        /// <param name="binder">
-        /// 提供有关调用了动态操作的对象的信息。 binder.Name 属性提供针对其执行动态操作的成员的名称。 例如，对于
-        /// Console.WriteLine(sampleObject.SampleProperty) 语句（其中 sampleObject 是派生自 <see cref="T:System.Dynamic.DynamicObject" />
-        /// 类的类的一个实例），binder.Name 将返回“SampleProperty”。 binder.IgnoreCase 属性指定成员名称是否区分大小写。
-        /// </param>
-        /// <param name="result"> 获取操作的结果。 例如，如果为某个属性调用该方法，则可以为 <paramref name="result" /> 指派该属性值。 </param>
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        protected override object this[object key]
         {
-            result = Value[binder.Name];
-            if (result != null)
-            {
-                if (TryChangeType(result, binder.ReturnType, out result))
-                {
-                    result = WrapToDynamic(result);
-                    return true;
-                }
-            }
-            result = DynamicPrimitive.Null;
-            return true;
+            get => Value[key];
+            set => Value[key] = value;
         }
-
-        /// <summary>
-        /// 为设置成员值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为诸如设置属性值这样的操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发语言特定的运行时异常。） </returns>
-        /// <param name="binder">
-        /// 提供有关调用了动态操作的对象的信息。 binder.Name 属性提供将该值分配到的成员的名称。 例如，对于语句 sampleObject.SampleProperty = "Test"（其中
-        /// sampleObject 是派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类的类的一个实例），binder.Name 将返回“SampleProperty”。
-        /// binder.IgnoreCase 属性指定成员名称是否区分大小写。
-        /// </param>
-        /// <param name="value">
-        /// 要为成员设置的值。 例如，对于 sampleObject.SampleProperty = "Test"（其中 sampleObject 是派生自
-        /// <see cref="T:System.Dynamic.DynamicObject" /> 类的类的一个实例），<paramref name="value" /> 为“Test”。
-        /// </param>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            if (IsReadOnly)
-            {
-                return false;
-                //throw new NotSupportedException("当前对象是只读的");
-            }
-            Value[binder.Name] = value;
-            return true;
-        }
-
-        private string GetIndexer0(object[] indexes)
-        {
-            if ((indexes == null) || (indexes.Length != 1))
-            {
-                return null;
-            }
-            return indexes[0] as string;
-        }
-
-        /// <summary>
-        /// 为按索引获取值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为索引操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发运行时异常。） </returns>
-        /// <param name="binder"> 提供有关该操作的信息。 </param>
-        /// <param name="indexes">
-        /// 该操作中使用的索引。 例如，对于 C# 中的 sampleObject[3] 操作（Visual Basic 中为 sampleObject(3)）（其中 sampleObject 派生自
-        /// DynamicObject 类），<paramref name="indexes[0]" /> 等于 3。
-        /// </param>
-        /// <param name="result"> 索引操作的结果。 </param>
-        public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
-        {
-            var key = GetIndexer0(indexes);
-            if (key == null)
-            {
-                result = DynamicPrimitive.Null;
-                return true;
-            }
-            result = Value[key];
-            if (result != null)
-            {
-                if (TryChangeType(result, binder.ReturnType, out result))
-                {
-                    result = WrapToDynamic(result);
-                    return true;
-                }
-            }
-            result = DynamicPrimitive.Null;
-            return true;
-        }
-
-        /// <summary>
-        /// 为按索引设置值的操作提供实现。 从 <see cref="T:System.Dynamic.DynamicObject" /> 类派生的类可以重写此方法，以便为按指定索引访问对象的操作指定动态行为。
-        /// </summary>
-        /// <returns> 如果此运算成功，则为 true；否则为 false。 如果此方法返回 false，则该语言的运行时联编程序将决定行为。（大多数情况下，将引发语言特定的运行时异常。） </returns>
-        /// <param name="binder"> 提供有关该操作的信息。 </param>
-        /// <param name="indexes">
-        /// 该操作中使用的索引。 例如，对于 C# 中的 sampleObject[3] = 10 操作（Visual Basic 中为 sampleObject(3) = 10）（其中
-        /// sampleObject 派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类），<paramref name="indexes[0]" /> 等于 3。
-        /// </param>
-        /// <param name="value">
-        /// 要为具有指定索引的对象设置的值。 例如，对于 C# 中的 sampleObject[3] = 10 操作（Visual Basic 中为 sampleObject(3) = 10）（其中
-        /// sampleObject 派生自 <see cref="T:System.Dynamic.DynamicObject" /> 类），<paramref name="value" /> 等于 10。
-        /// </param>
-        public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
-        {
-            if (IsReadOnly)
-            {
-                return false;
-                //throw new NotSupportedException("当前对象是只读的");
-            }
-            var key = GetIndexer0(indexes);
-            if (key == null)
-            {
-                return false;
-            }
-            Value[key] = value;
-            return true;
-        }
-
-
 
         #region 显示实现接口
 

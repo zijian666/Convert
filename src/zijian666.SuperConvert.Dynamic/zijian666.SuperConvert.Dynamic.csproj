@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="zijian666.SuperConvert" Version="4.0.0.4-beta" />
+    <PackageReference Include="zijian666.SuperConvert" Version="4.0.0.6-beta" />
   </ItemGroup>
 
 </Project>

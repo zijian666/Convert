@@ -16,6 +16,7 @@ namespace zijian666.SuperConvert.Dynamic
 
         public ConvertResult<DynamicObject> From(IConvertContext context, Dictionary<string, object> input)
             => DynamicFactory.Create(input, context.Settings);
+
         public ConvertResult<DynamicObject> From(IConvertContext context, object[] input)
             => DynamicFactory.Create(input, context.Settings);
     }

@@ -3,20 +3,22 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using System.Dynamic;
+using zijian666.SuperConvert.Extensions;
 using zijian666.SuperConvert.Interface;
 
 namespace zijian666.SuperConvert.Dynamic
 {
     public static class DynamicFactory
     {
-        public static dynamic Create(object value, IConvertSettings convertSettings)
+        public static DynamicObject Create(object value, IConvertSettings convertSettings)
         {
             switch (value)
             {
                 case DBNull dbNull:
+                    return DynamicPrimitive.Null;
                 case null:
                     return DynamicPrimitive.Null;
-                case IDynamicMetaObjectProvider dyc:
+                case DynamicObject dyc:
                     return dyc;
                 case string str:
                     return new DynamicPrimitive(str, convertSettings);
@@ -37,7 +39,7 @@ namespace zijian666.SuperConvert.Dynamic
                 case IEnumerable e2:
                     return new DynamicEnumerator(e2.GetEnumerator(), convertSettings);
             }
-            if ("System".Equals(value.GetType().Namespace, StringComparison.Ordinal))
+            if (value.GetType().IsMetaType())
             {
                 return new DynamicPrimitive(value, convertSettings);
             }

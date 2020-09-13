@@ -28,11 +28,6 @@ namespace zijian666.SuperConvert.Dynamic
         }
 
         /// <summary>
-        /// 获取或设置实例是否为只读
-        /// </summary>
-        public bool IsReadOnly { get; set; }
-
-        /// <summary>
         /// 返回所有动态成员名称的枚举。
         /// </summary>
         /// <returns> 一个包含动态成员名称的序列。 </returns>
@@ -50,12 +45,9 @@ namespace zijian666.SuperConvert.Dynamic
         /// <param name="result"> 类型转换运算的结果。 </param>
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            if (typeof(IConvertible).IsAssignableFrom(binder.ReturnType))
+            if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
             {
-                if ((Value.Count == 1) && TryChangeType(Value[0], binder.ReturnType, out result))
-                {
-                    return true;
-                }
+                return true;
             }
             return TryChangeType(Value, binder.ReturnType, out result);
         }

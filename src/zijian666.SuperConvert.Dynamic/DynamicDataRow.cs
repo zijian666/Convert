@@ -142,7 +142,7 @@ namespace zijian666.SuperConvert.Dynamic
                 }
                 return null;
             }
-            var i = index.To(-1);
+            var i = index.Convert<int>(ConvertSettings).GetValueOrDefalut(-1);
             if ((i < 0) || (i > Value.ItemArray.Length))
             {
                 return null;
