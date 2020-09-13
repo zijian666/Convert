@@ -53,7 +53,7 @@ namespace zijian666.SuperConvert.Convertor
                 case TypeCode.DBNull:
                 case TypeCode.DateTime:
                 case TypeCode.Boolean:
-                    return default;
+                    return context.ConvertFail(this, input);
                 case TypeCode.Decimal:
                 case TypeCode.Char:
                 case TypeCode.Int16:
@@ -62,36 +62,18 @@ namespace zijian666.SuperConvert.Convertor
                 case TypeCode.SByte:
                 case TypeCode.Double:
                 case TypeCode.Single:
-                    result = (T)Enum.ToObject(OutputType, input.ToInt64(null));
-                    break;
+                    return (T)Enum.ToObject(OutputType, input.ToInt64(null));
                 case TypeCode.Byte:
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
-                    result = (T)Enum.ToObject(OutputType, input.ToUInt64(null));
-                    break;
+                    return (T)Enum.ToObject(OutputType, input.ToUInt64(null));
                 case TypeCode.String:
                     return From(context, input.ToString(null));
                 case TypeCode.Object:
                 default:
-                    return default;
+                    return context.ConvertFail(this, input);
             }
-            if (result.Equals(default(T)))
-            {
-                return result;
-            }
-            if (Enum.IsDefined(OutputType, result))
-            {
-                return result;
-            }
-            if (Attribute.IsDefined(OutputType, typeof(FlagsAttribute)))
-            {
-                if (result.ToString().IndexOf(',') >= 0)
-                {
-                    return result;
-                }
-            }
-            return context.ConvertFail(this, input);
         }
     }
 }

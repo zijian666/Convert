@@ -23,32 +23,38 @@ namespace zijian666.SuperConvert.Convertor.Base
         public ConvertResult<T> Convert(IConvertContext context, object input)
         {
             var trace = context.Settings.Trace;
-            if (trace != null)
+            if (trace == null)
             {
-                trace.WriteLine("调用：" + InnerConvertor.ToString());
-                trace.IndentLevel++;
+                var r = InnerConvertor.Convert(context, input);
+                if (r.Exception != null)
+                {
+                    r.Exception.Data.Add("Convert", InnerConvertor);
+                    r.Exception.Data.Add("InputValue", input);
+                    r.Exception.Data.Add("OutputType", typeof(T));
+                }
+                return r;
             }
+
+            trace.WriteLine("调用：" + InnerConvertor.ToString());
+            trace.IndentLevel++;
             var result = InnerConvertor.Convert(context, input);
-            if (trace != null)
-            {
-                trace.IndentLevel--;
-            }
+            trace.IndentLevel--;
             var ex = result.Exception;
             if (ex is null)
             {
-                trace?.WriteLine("返回：" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
+                trace.WriteLine("返回：" + (_context.Convert<string>(result.Value).Value ?? "{null}"));
             }
             else
             {
-                trace?.WriteLine("输入值：" + (input ?? "{null}"));
-                trace?.WriteLine("输出类型：" + typeof(T).GetFriendlyName());
-                trace?.WriteLine("异常：" + ex.ToString());
+                trace.WriteLine("输入值：" + (input ?? "{null}"));
+                trace.WriteLine("输出类型：" + typeof(T).GetFriendlyName());
+                trace.WriteLine("异常：" + ex.ToString());
                 ex.Data.Add("Convert", InnerConvertor);
                 ex.Data.Add("InputValue", input);
                 ex.Data.Add("OutputType", typeof(T));
             }
 
-            trace?.WriteLine("");
+            trace.WriteLine("");
             return result;
         }
 
@@ -85,6 +91,8 @@ namespace zijian666.SuperConvert.Convertor.Base
             public Dictionary<Type, string> FormatStrings => Converts.Settings.FormatStrings;
 
             public IReflectCompiler ReflectCompiler => Converts.Settings.ReflectCompiler;
+
+            public bool StrictEnum => Converts.Settings.StrictEnum;
         }
 
         private string GetDebuggerDisplay()

@@ -12,7 +12,7 @@
     <PackageTags>.net core,c#,csharp,convert,cast,convertion,zijian,zijian666,parse</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>4.0.0.4-beta</Version>
+    <Version>4.0.0.6-beta</Version>
     <Authors>zijian</Authors>
     <Description>可以实现任意类型之间的转换</Description>
     <PackageReleaseNotes>

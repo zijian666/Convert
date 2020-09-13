@@ -98,5 +98,7 @@ namespace zijian666.SuperConvert.Core
             => Translators;
 
         public string Protocol { get; set; } = StringSerializerCollection.DefaultProtocol;
+
+        public bool StrictEnum { get; set; } = true;
     }
 }

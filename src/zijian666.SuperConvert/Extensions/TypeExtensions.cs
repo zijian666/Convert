@@ -9,7 +9,7 @@ namespace zijian666.SuperConvert.Extensions
     /// <summary>
     /// 关于类型 <seealso cref="Type"/> 的扩展方法
     /// </summary>
-    internal static class TypeExtensions
+    public static class TypeExtensions
     {
         /// <summary>
         /// 安全的获取程序集中可以被导出的类型

@@ -76,5 +76,7 @@ namespace zijian666.SuperConvert.Core
             => _settings1?.FormatStrings ?? _settings2?.FormatStrings;
 
         public IReflectCompiler ReflectCompiler => _settings1?.ReflectCompiler ?? _settings2.ReflectCompiler;
+
+        public bool StrictEnum => _settings1?.StrictEnum ?? _settings2.StrictEnum;
     }
 }

@@ -11,7 +11,7 @@ namespace zijian666.SuperConvert.Convertor.Base
     /// 转换器基类
     /// </summary>
     /// <typeparam name="T">输出类型</typeparam>
-    public abstract class FromConvertor<T> : BaseConvertor<T>, IConvertor<T>
+    public abstract class FromConvertor<T> : BaseConvertor<T>
     {
         /// <summary>
         /// 调用器字典
@@ -65,6 +65,23 @@ namespace zijian666.SuperConvert.Convertor.Base
             // 字符串之前已经处理过了 这里跳过
             if (input is string)
             {
+                if (this is IFrom<object, T> from)
+                {
+                    try
+                    {
+                        var result = from.From(context, input);
+                        if (result.Success)
+                        {
+                            return result;
+                        }
+                        exceptions += result.Exception;
+
+                    }
+                    catch (Exception e)
+                    {
+                        exceptions += e;
+                    }
+                }
                 return ConvertResult<T>.NULL;
             }
 
@@ -95,29 +112,6 @@ namespace zijian666.SuperConvert.Convertor.Base
                 }
                 //如果异常,下面还可以尝试其他方案
                 exceptions += result.Exception;
-            }
-
-            if (translation)
-            {
-                var type = input.GetType();
-                var values = context.Settings.Translators?.Where(x => x.CanTranslate(type)).Select(x => x.Translate(context, input));
-                foreach (var value in values ?? Array.Empty<object>())
-                {
-                    if (input != value)
-                    {
-                        if (value is T t)
-                        {
-                            return Ok(t);
-                        }
-                        var result = TryFrom(context, value, false, ref exceptions);
-                        if (result.Success)
-                        {
-                            return result;
-                        }
-                        //如果异常,下面还可以尝试其他方案
-                        exceptions += result.Exception;
-                    }
-                }
             }
 
             return ConvertResult<T>.NULL;

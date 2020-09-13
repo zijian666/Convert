@@ -32,5 +32,7 @@ namespace zijian666.SuperConvert.Interface
         StringSeparator StringSeparator { get; }
 
         StringSplitOptions StringSplitOptions { get; }
+
+        bool StrictEnum { get; }
     }
 }
