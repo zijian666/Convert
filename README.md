@@ -1,48 +1,51 @@
-# Converts
-³¬¼¶×ª»»Æ÷ 
-> .NET Standard 2.0 ÖØĞÂÉè¼Æ  
-> *ÀÏÏîÄ¿ÒÑ¾­Í£Ö¹Î¬»¤ [Convert3](https://github.com/blqw/blqw.Convert3)*
+é¡¹ç›®ä»£ç å·²ç»ç§»åˆ°[ç äº‘](https://gitee.com/zijian666/super-convert)
 
-# ËµÃ÷
-> ¶ÔÏó×ª»»£¬´ÓÎ´Èç´Ë¼òµ¥  
+# Converts
+
+è¶…çº§è½¬æ¢å™¨ 
+> .NET Standard 2.0 é‡æ–°è®¾è®¡  
+> *è€é¡¹ç›®å·²ç»åœæ­¢ç»´æŠ¤ [Convert3](https://github.com/blqw/blqw.Convert3)*
+
+# è¯´æ˜
+> å¯¹è±¡è½¬æ¢ï¼Œä»æœªå¦‚æ­¤ç®€å•  
 ```csharp
-obj.To<T>();                //×ª»»Ê§°Ü,Å×³öÒì³£
-obj.To<T>(T defaultValue);  //×ª»»Ê§°Ü,·µ»ØÄ¬ÈÏÖµ
-obj.To<T>(out succeed);     //Êä³ö×ª»»ÊÇ·ñ³É¹¦
-//ÏÂÃæ3¸öÊÇ·Ç·ºĞÍ·½·¨ 
+obj.To<T>();                //è½¬æ¢å¤±è´¥,æŠ›å‡ºå¼‚å¸¸
+obj.To<T>(T defaultValue);  //è½¬æ¢å¤±è´¥,è¿”å›é»˜è®¤å€¼
+obj.To<T>(out succeed);     //è¾“å‡ºè½¬æ¢æ˜¯å¦æˆåŠŸ
+//ä¸‹é¢3ä¸ªæ˜¯éæ³›å‹æ–¹æ³• 
 obj.To(Type outputType);
 obj.To(Type outputType, object defaultValue);
 obj.To(Type outputType, out succeed);
 ```
 
-## ´úÂëÕ¹Ê¾
+## ä»£ç å±•ç¤º
 ```csharp
-//×î»ù±¾
+//æœ€åŸºæœ¬
 "1".To<int>();
-"a".To<int>(0); //×ª»»Ê§°Ü·µ»Ø 0
-"ÊÇ".To<bool>(); //Ö§³Ö "ÊÇ/·ñ" "Õæ/¼Ù" "¶Ô/´í" "t/f" "true/false" µÈ
+"a".To<int>(0); //è½¬æ¢å¤±è´¥è¿”å› 0
+"æ˜¯".To<bool>(); //æ”¯æŒ "æ˜¯/å¦" "çœŸ/å‡" "å¯¹/é”™" "t/f" "true/false" ç­‰
 byte[].To<Guid>();
 
-//½ø½×
+//è¿›é˜¶
 "1,2,3,4,5,6".To<int[]>();
 "{\"id\":\"name\":\"blqw\"}".To<User>();
-Dictionary.To<Entity>(); //¼üÖµ¶Ô×ªÊµÌå
-DataRow.To<Entity>(); //Êı¾İĞĞ×ªÊµÌå
-DataTable.To<List<Entity>>; //Êı¾İ±í×ªÊµÌå¼¯ºÏ
+Dictionary.To<Entity>(); //é”®å€¼å¯¹è½¬å®ä½“
+DataRow.To<Entity>(); //æ•°æ®è¡Œè½¬å®ä½“
+DataTable.To<List<Entity>>; //æ•°æ®è¡¨è½¬å®ä½“é›†åˆ
 
-//¸ü¸´ÔÓ
+//æ›´å¤æ‚
 DataTable.To<List<NameValueCollection>>(); 
 List<Dictionary<string, object>>.To<DataTable>(); 
-new { ID=1, Name="blqw"}.To<User>(); //ÄäÃûÀà×ª»»
+new { ID=1, Name="blqw"}.To<User>(); //åŒ¿åç±»è½¬æ¢
 
-//±äÌ¬Ç¶Ì×
+//å˜æ€åµŒå¥—
 Dictionary<Guid, Dictionary<int, User>>
-    .To<Dictionary<string, Dictionary<DateTime, NameValueCollection>>>(); //²»ÄÜÀí½â¾ÍËãÁË
+    .To<Dictionary<string, Dictionary<DateTime, NameValueCollection>>>(); //ä¸èƒ½ç†è§£å°±ç®—äº†
 ```
-## À©Õ¹×Ô¶¨Òå×ª»»Æ÷
+## æ‰©å±•è‡ªå®šä¹‰è½¬æ¢å™¨
 ```csharp
 [TestMethod]
-public void ×Ô¶¨Òå×ª»»Æ÷()
+public void è‡ªå®šä¹‰è½¬æ¢å™¨()
 {
     var i = 11;
     var my = i.To<MyClass>();
@@ -63,10 +66,10 @@ public class MyConvertor : AllowNullConvertor<MyClass>, IFrom<int, MyClass>
 }
 ```
 
-## ÖÇÄÜÊ¶±ğ×Ô¶¨Òå×ª»»·½·¨
+## æ™ºèƒ½è¯†åˆ«è‡ªå®šä¹‰è½¬æ¢æ–¹æ³•
 ```csharp
 [TestMethod]
-public void ×Ô¶¨ÒåÇ¿×ª()
+public void è‡ªå®šä¹‰å¼ºè½¬()
 {
     var i = 11;
     var my = i.To<MyClass>();
@@ -81,7 +84,7 @@ public class MyClass
 ```
 ```csharp
 [TestMethod]
-public void ×Ô¶¨ÒåÒş×ª()
+public void è‡ªå®šä¹‰éšè½¬()
 {
     var i = 11;
     var my = i.To<MyClass2>();
@@ -95,22 +98,22 @@ public class MyClass2
 }
 ```
 
-## ÆäËû¹¦ÄÜ
+## å…¶ä»–åŠŸèƒ½
 ```csharp
-//Êı×Ö×ª´óĞ´
-Console.WriteLine(Converts.ToChineseAmount("123456456.789")); //Ò¼ÒÚ·¡ÇªÈş°ÛËÁÊ°ÎéÍòÂ½ÇªËÁ°ÛÎéÊ°Â½ÔªÆâ½Ç°Æ·Ö
-Console.WriteLine(Converts.ToChineseNumber("123456456.789")); //Ò»ÒÚ¶şÇ§Èı°ÙËÄÊ®ÎåÍòÁùÇ§ËÄ°ÙÎåÊ®ÁùµãÆß°Ë¾Å
-Console.WriteLine(Converts.ToChineseAmount("123456456.789", true)); //Ò»ÒÚ¶şÇ§Èı°ÙËÄÊ®ÎåÍòÁùÇ§ËÄ°ÙÎåÊ®ÁùÔªÆß½Ç°Ë·Ö
+//æ•°å­—è½¬å¤§å†™
+Console.WriteLine(Converts.ToChineseAmount("123456456.789")); //å£¹äº¿è´°ä»Ÿåä½°è‚†æ‹¾ä¼ä¸‡é™†ä»Ÿè‚†ä½°ä¼æ‹¾é™†å…ƒæŸ’è§’æŒåˆ†
+Console.WriteLine(Converts.ToChineseNumber("123456456.789")); //ä¸€äº¿äºŒåƒä¸‰ç™¾å››åäº”ä¸‡å…­åƒå››ç™¾äº”åå…­ç‚¹ä¸ƒå…«ä¹
+Console.WriteLine(Converts.ToChineseAmount("123456456.789", true)); //ä¸€äº¿äºŒåƒä¸‰ç™¾å››åäº”ä¸‡å…­åƒå››ç™¾äº”åå…­å…ƒä¸ƒè§’å…«åˆ†
 
-//È«°ë½Ç×ª»»
-Console.WriteLine(Converts.ToDBC("£¬£±£²£³£´£µ£¶£·£á£ë£ó"));//,1234567aks
-Console.WriteLine(Converts.ToSBC("!1f23d.?@"));         //£¡£±£æ£²£³£ä£®£¿£À
+//å…¨åŠè§’è½¬æ¢
+Console.WriteLine(Converts.ToDBC("ï¼Œï¼‘ï¼’ï¼“ï¼”ï¼•ï¼–ï¼—ï½ï½‹ï½“"));//,1234567aks
+Console.WriteLine(Converts.ToSBC("!1f23d.?@"));         //ï¼ï¼‘ï½†ï¼’ï¼“ï½„ï¼ï¼Ÿï¼ 
 
-//ÕªÒª/¼ÓÃÜ
+//æ‘˜è¦/åŠ å¯†
 Console.WriteLine(Converts.ToMD5("123456"));    //e10adc3949ba59abbe56e057f20f883e
 Console.WriteLine(Converts.ToSHA1("123456"));   //7c4a8d09ca3762af61e59520943dc26494f8941b
 
-//Ëæ»ú¼ÓÃÜ
+//éšæœºåŠ å¯†
 var arr = new[]
 {
     Converts.ToRandomMD5("123456"),
@@ -134,13 +137,13 @@ fa91eefc-e903-dbcf-394b-0b757987357b : True
 ```
 
 
-## ¸üĞÂËµÃ÷ 
+## æ›´æ–°è¯´æ˜ 
 ### [4.0.0.4-beta]2020.09.09
-+ ¶¯Ì¬¼ÓÔØJsonÖ§³Ö×é¼ş(nuget°²×°zijian666.SuperConvert.Json)
-* ÓÅ»¯²¿·ÖÊı¾İ×ª»»Âß¼­
++ åŠ¨æ€åŠ è½½Jsonæ”¯æŒç»„ä»¶(nugetå®‰è£…zijian666.SuperConvert.Json)
+* ä¼˜åŒ–éƒ¨åˆ†æ•°æ®è½¬æ¢é€»è¾‘
 
 ### [4.0.0.3-beta]2020.09.07
-+ ÒÀÀµºËĞÄ°ü
++ ä¾èµ–æ ¸å¿ƒåŒ…
 
 ### [4.0.0-beta]2020.09.06
-* Éı¼¶µ½standard2.0
+* å‡çº§åˆ°standard2.0
